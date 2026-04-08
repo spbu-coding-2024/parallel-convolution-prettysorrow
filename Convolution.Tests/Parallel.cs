@@ -21,18 +21,6 @@ public class Parallel
     }
 
     [Fact]
-    public void Apply_Blur3_ProducesDifferentImage()
-    {
-        using var input = imageGenerator.Generate();
-        using var result = Impl.Parallel.Apply(input, Filter.Blur3);
-
-        Assert.Equal(input.Width, result.Width);
-        Assert.Equal(input.Height, result.Height);
-
-        Assert.False(input.Equal(result));
-    }
-
-    [Fact]
     public void Apply_Sharpen_ProducesDifferentImage()
     {
         using var input = imageGenerator.Generate();
@@ -40,6 +28,18 @@ public class Parallel
 
         Assert.Equal(input.Width, result.Width);
         Assert.Equal(input.Height, result.Height);
+        Assert.False(input.Equal(result));
+    }
+
+    [Fact]
+    public void Apply_BoxBlur_ProducesDifferentImage()
+    {
+        using var input = imageGenerator.Generate();
+        using var result = Impl.Parallel.Apply(input, Filter.BoxBlur(radius: 1));
+
+        Assert.Equal(input.Width, result.Width);
+        Assert.Equal(input.Height, result.Height);
+
         Assert.False(input.Equal(result));
     }
 }
