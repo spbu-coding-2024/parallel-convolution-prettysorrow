@@ -39,9 +39,8 @@ void ApplyFilterAndSave(Image<Rgb24> image, string outputPath, string filterName
 {
     Filter filter = filterName.ToLowerInvariant() switch
     {
-        "blur" => Filter.Blur3,
-        "edges" => Filter.Edges,
         "id" => Filter.Identity,
+        "edges" => Filter.Edges,
         "sharpen" => Filter.Sharpen,
         _ => throw new ArgumentException($"unknown filter '{filterName}'")
     };
