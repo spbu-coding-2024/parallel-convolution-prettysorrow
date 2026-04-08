@@ -1,7 +1,7 @@
 namespace Convolution.Tests;
 
 using Convolution.Core;
-using Convolution.Extentions;
+using Convolution.Extensions;
 using Xunit;
 
 public class Parallel
