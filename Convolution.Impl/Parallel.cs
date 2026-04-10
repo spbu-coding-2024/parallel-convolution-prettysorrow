@@ -7,69 +7,96 @@ using SixLabors.ImageSharp.PixelFormats;
 
 public static class Parallel
 {
-    public enum PartitionMode
-    {
-        Rows,
-        Columns,
-        Tiles
-    }
-
     public static Image<Rgb24> Apply(Image<Rgb24> source, Filter filter)
-        => Apply(source, filter, PartitionMode.Rows, null);
+        => ApplyRows(source, filter);
 
-    public static Image<Rgb24> Apply(Image<Rgb24> source, Filter filter, PartitionMode mode, int? tileSize = null)
+
+    public static Image<Rgb24> ApplyRows(Image<Rgb24> source, Filter filter)
     {
-        int w = source.Width;
-        int h = source.Height;
+        Image<Rgb24> result = new(source.Width, source.Height);
 
-        var result = new Image<Rgb24>(w, h);
+        int batchSize = Math.Max(1, source.Height / Environment.ProcessorCount);
+        int batchesAmount = (source.Height + batchSize - 1) / batchSize;  // ceiled source.Height / batchSize
 
-        // TODO: get rid of explicit pixels sequence
-        var regions = new List<(int x0, int y0, int x1, int y1)>();
-
-        // TODO: revisit
-        switch (mode)
+        System.Threading.Tasks.Parallel.For(0, batchesAmount, batchIndex =>
         {
-            case PartitionMode.Rows:
-                int rowsPerPart = Math.Max(1, h / Environment.ProcessorCount);
-                for (int y0 = 0; y0 < h; y0 += rowsPerPart)
-                {
-                    int y1 = Math.Min(y0 + rowsPerPart, h);
-                    regions.Add((0, y0, w, y1));
-                }
-                break;
-
-            case PartitionMode.Columns:
-                int colsPerPart = Math.Max(1, w / Environment.ProcessorCount);
-                for (int x0 = 0; x0 < w; x0 += colsPerPart)
-                {
-                    int x1 = Math.Min(x0 + colsPerPart, w);
-                    regions.Add((x0, 0, x1, h));
-                }
-                break;
-
-            case PartitionMode.Tiles:
-                int tile = tileSize ?? (int)Math.Sqrt(w * h / Environment.ProcessorCount);
-                tile = Math.Max(16, tile);
-                for (int y0 = 0; y0 < h; y0 += tile)
-                {
-                    int y1 = Math.Min(y0 + tile, h);
-                    for (int x0 = 0; x0 < w; x0 += tile)
-                    {
-                        int x1 = Math.Min(x0 + tile, w);
-                        regions.Add((x0, y0, x1, y1));
-                    }
-                }
-                break;
-        }
-
-        System.Threading.Tasks.Parallel.ForEach(regions, region =>
-        {
-            for (int y = region.y0; y < region.y1; y++)
-                for (int x = region.x0; x < region.x1; x++)
-                    result[x, y] = filter.ApplyToRgb24(source, x, y);
+            int startX = 0;
+            int endX = source.Width;
+            int startY = batchIndex * batchSize;
+            int endY = Math.Min(startY + batchSize, source.Height);
+            ApplyOneTile(source, result, filter, startY, endY, startX, endX);
         });
 
         return result;
+    }
+
+    public static Image<Rgb24> ApplyColumns(Image<Rgb24> source, Filter filter)
+    {
+        Image<Rgb24> result = new(source.Width, source.Height);
+
+        int batchSize = Math.Max(1, source.Width / Environment.ProcessorCount);
+        int batchesAmount = (source.Width + batchSize - 1) / batchSize;  // ceiled source.Width / batchSize
+
+        System.Threading.Tasks.Parallel.For(0, batchesAmount, batchIndex =>
+        {
+            int startX = batchIndex * batchSize;
+            int endX = Math.Min(startX + batchSize, source.Width);
+            int startY = 0;
+            int endY = source.Height;
+
+            ApplyOneTile(source, result, filter, startY, source.Height, startX, endX);
+        });
+
+        return result;
+    }
+
+    public static Image<Rgb24> ApplyTiles(Image<Rgb24> source, Filter filter, int? tileSize)
+    {
+        Image<Rgb24> result = new(source.Width, source.Height);
+
+        int _tileSize = tileSize ?? EstimateOptimalTileSize(source.Width, source.Height); // TODO: weird
+
+        int tilesAcross = (source.Width + _tileSize - 1) / _tileSize;  // ceiled source.Width / _tileSize
+        int tilesDown = (source.Height + _tileSize - 1) / _tileSize;   // ceiled source.Height / _tileSize
+        int totalTiles = tilesAcross * tilesDown;
+
+        System.Threading.Tasks.Parallel.For(0, totalTiles, tileIndex =>
+        {
+            // left-to-right-top-to-bottom tiles traverse order
+            int tileRow = tileIndex / tilesAcross;
+            int tileColumn = tileIndex % tilesAcross;
+
+            int startX = tileColumn * _tileSize;
+            int endX = Math.Min(startX + _tileSize, source.Width);
+            int startY = tileRow * _tileSize;
+            int endY = Math.Min(startY + _tileSize, source.Height);
+
+            ApplyOneTile(source, result, filter, startY, endY, startX, endX);
+        });
+
+        return result;
+    }
+
+    private static int EstimateOptimalTileSize(int width, int height)
+    {
+        int totalPixels = width * height;
+        int pixelsPerTile = totalPixels / Environment.ProcessorCount;
+        int estimate = (int)Math.Max(16, Math.Sqrt(pixelsPerTile)); // TODO: is 16 OK?
+        return estimate;
+    }
+
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private static void ApplyOneTile(
+        Image<Rgb24> source,
+        Image<Rgb24> destination,
+        Filter filter,
+        int startY,
+        int endY,
+        int startX,
+        int endX)
+    {
+        for (int y = startY; y < endY; y++)
+            for (int x = startX; x < endX; x++)
+                destination[x, y] = filter.ApplyToRgb24(source, x, y);
     }
 }
