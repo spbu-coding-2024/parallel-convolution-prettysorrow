@@ -1,7 +1,5 @@
 namespace Convolution.Core;
 
-using System;
-
 public class Filter
 {
     public double[,] Kernel { get; }
