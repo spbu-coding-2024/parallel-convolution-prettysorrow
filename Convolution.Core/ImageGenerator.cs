@@ -6,14 +6,9 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Drawing;
 
-public class ImageGenerator
+public class ImageGenerator(int? seed = null)
 {
-    private readonly Random _random;
-
-    public ImageGenerator(int? seed = null)
-    {
-        this._random = seed.HasValue ? new Random(seed.Value) : new Random();
-    }
+    private readonly Random _random = seed.HasValue ? new Random(seed.Value) : new Random();
 
     public Image<Rgb24> Generate(int width = 800, int height = 600, int shapeCount = 20)
     {
@@ -28,9 +23,7 @@ public class ImageGenerator
         image.Mutate(ctx => ctx.BackgroundColor(backgroundColor));
 
         for (int i = 0; i < shapeCount; i++)
-        {
             this.DrawRandomShape(image, width, height);
-        }
 
         return image;
     }
