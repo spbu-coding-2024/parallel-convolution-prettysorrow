@@ -123,3 +123,36 @@ public class Filter
         {  0,  0,  0 },
         {  1,  1,  1 }
     }, factor: 1.0, bias: 128.0);
+
+    public static Filter Compose(Filter f1, Filter f2)
+    {
+        int aSize = f1.Kernel.GetLength(0);
+        int bSize = f2.Kernel.GetLength(0);
+        int cSize = aSize + bSize - 1;
+        int aOff = aSize / 2;
+        int bOff = bSize / 2;
+        int cOff = cSize / 2;
+
+        var kernel = new double[cSize, cSize];
+        double sumK2 = 0;
+
+        for (int by = 0; by < bSize; by++)
+            for (int bx = 0; bx < bSize; bx++)
+                sumK2 += f2.Kernel[by, bx];
+
+        for (int ay = 0; ay < aSize; ay++)
+            for (int ax = 0; ax < aSize; ax++)
+                for (int by = 0; by < bSize; by++)
+                    for (int bx = 0; bx < bSize; bx++)
+                    {
+                        int ky = (ay - aOff) + (by - bOff) + cOff;
+                        int kx = (ax - aOff) + (bx - bOff) + cOff;
+                        kernel[ky, kx] += f1.Kernel[ay, ax] * f2.Kernel[by, bx];
+                    }
+
+        double factor = f1.Factor * f2.Factor;
+        double bias = f1.Bias * sumK2 * f2.Factor + f2.Bias;
+
+        return new Filter(kernel, factor, bias, f1.EdgeHandling);
+    }
+}
