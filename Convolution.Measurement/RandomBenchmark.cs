@@ -1,33 +1,24 @@
-﻿namespace Convolution.Measurement;
+namespace Convolution.Measurement;
 
-using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Attributes;
 using Convolution.Core;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-// it does not use toplevel statements because it is inside of file-scoped namespace
-public static class Program
-{
-    public static void Main()
-    {
-        BenchmarkRunner.Run<BlurBenchmark>();
-    }
-
-}
-
 [MemoryDiagnoser]
-[RPlotExporter]
-[SimpleJob(warmupCount: 1, iterationCount: 3)]
-public class BlurBenchmark
+[MarkdownExporter]
+[CsvExporter]
+[SimpleJob(warmupCount: 1, iterationCount: 5)]
+public class RandomBenchmark
 {
     [Params(512, 1024)]
     public int ImageSize { get; set; }
 
-    [Params(1, 3, 5)]
-    public int BlurRadius { get; set; }
+    [Params(3, 5, 21)]
+    public int FilterSize { get; set; }
 
     private readonly ImageGenerator _imageGenerator = new(seed: 42);
+    private readonly FilterGenerator _filterGenerator = new(seed: 42);
     private Image<Rgb24> _sourceImage = null!;
     private Filter _filter = null!;
 
@@ -35,7 +26,7 @@ public class BlurBenchmark
     public void Setup()
     {
         _sourceImage = _imageGenerator.Next(width: ImageSize, height: ImageSize);
-        _filter = Filter.BoxBlur(radius: BlurRadius);
+        _filter = _filterGenerator.Next(size: FilterSize);
     }
 
 
