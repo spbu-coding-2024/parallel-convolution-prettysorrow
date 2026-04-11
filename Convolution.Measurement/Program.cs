@@ -34,7 +34,7 @@ public class BlurBenchmark
     [GlobalSetup]
     public void Setup()
     {
-        _sourceImage = _imageGenerator.Generate(width: ImageSize, height: ImageSize);
+        _sourceImage = _imageGenerator.Next(width: ImageSize, height: ImageSize);
         _filter = Filter.BoxBlur(radius: BlurRadius);
     }
 
