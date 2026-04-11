@@ -5,12 +5,13 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Drawing;
+using System.Security.Cryptography.X509Certificates;
 
 public class ImageGenerator(int? seed = null)
 {
     private readonly Random _random = seed.HasValue ? new Random(seed.Value) : new Random();
 
-    public Image<Rgb24> Generate(int width = 800, int height = 600, int shapeCount = 20)
+    public Image<Rgb24> Next(int width = 800, int height = 600, int shapeCount = 20)
     {
         var image = new Image<Rgb24>(width, height);
 
@@ -23,55 +24,55 @@ public class ImageGenerator(int? seed = null)
         image.Mutate(ctx => ctx.BackgroundColor(backgroundColor));
 
         for (int i = 0; i < shapeCount; i++)
-            this.DrawRandomShape(image, width, height);
+            this.DrawRandomShape(image);
 
         return image;
     }
 
-    private void DrawRandomShape(Image<Rgb24> image, int maxWidth, int maxHeight)
+    private void DrawRandomShape(Image<Rgb24> image)
     {
-
         var color = new Rgb24(
             (byte)this._random.Next(256),
             (byte)this._random.Next(256),
             (byte)this._random.Next(256)
         );
 
-        var shapeType = this._random.Next(3);
+        var (x, y) = (this._random.Next(image.Width), this._random.Next(image.Height));
 
         image.Mutate(ctx =>
         {
-            switch (shapeType)
+            switch (this._random.Next(3))
             {
                 case 0:
-                    var rect = new RectangleF(
-                        this._random.Next(maxWidth),
-                        this._random.Next(maxHeight),
-                        this._random.Next(20, 200),
-                        this._random.Next(20, 200)
+                    var rectangle = new RectangleF(
+                        x,
+                        y,
+                        width: this._random.Next(20, 200),
+                        height: this._random.Next(20, 200)
                     );
 
-                    ctx.Fill(color, rect);
+                    ctx.Fill(color, rectangle);
                     break;
 
                 case 1:
                     var ellipse = new EllipsePolygon(
-                        this._random.Next(maxWidth),
-                        this._random.Next(maxHeight),
-                        this._random.Next(10, 150)
+                        x,
+                        y,
+                        radius: this._random.Next(10, 150)
                     );
 
                     ctx.Fill(color, ellipse);
                     break;
 
                 case 2:
-                    var pen = new SolidPen(color, this._random.Next(1, 5));
-                    var points = new PointF[]
-                    {
-                        new (this._random.Next(maxWidth), this._random.Next(maxHeight)),
-                        new (this._random.Next(maxWidth), this._random.Next(maxHeight))
-                    };
-                    ctx.DrawLine(pen, points);
+                    var triangle = new RegularPolygon(
+                        x,
+                        y,
+                        vertices: 3,
+                        radius: this._random.Next(10, 150)
+                    );
+
+                    ctx.Fill(color, triangle);
                     break;
             }
         });
