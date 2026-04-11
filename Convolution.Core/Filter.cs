@@ -43,43 +43,6 @@ public class Filter
         { 0.0, 0.0, 0.0, 0.0, 0.0 },
    }, factor: 1.0, bias: 0.0);
 
-    public static readonly Filter Sharpen = new(kernel: new double[,]
- {
-        { -1f, -1f, -1f, },
-        { -1f, 9f, -1f, },
-        { -1f, -1f, -1f, },
- }, factor: 1.0, bias: 0.0);
-
-    public static readonly Filter SobelX = new(kernel: new double[,]
-    {
-        { -1,  0,  1 },
-        { -2,  0,  2 },
-        { -1,  0,  1 }
-    }, factor: 1.0, bias: 0.0);
-
-
-    public static readonly Filter SobelY = new(kernel: new double[,]
-    {
-        { -1, -2, -1 },
-        {  0,  0,  0 },
-        {  1,  2,  1 }
-    }, factor: 1.0, bias: 0.0);
-
-    public static readonly Filter PrewittX = new(kernel: new double[,]
-    {
-        { -1,  0,  1 },
-        { -1,  0,  1 },
-        { -1,  0,  1 }
-    }, factor: 1.0, bias: 0.0);
-
-    public static readonly Filter PrewittY = new(kernel: new double[,]
-    {
-        { -1, -1, -1 },
-        {  0,  0,  0 },
-        {  1,  1,  1 }
-    }, factor: 1.0, bias: 0.0);
-
-
     public static Filter BoxBlur(int radius)
     {
         if (radius < 1) throw new ArgumentException("Radius must be at least 1", nameof(radius));
@@ -125,4 +88,38 @@ public class Filter
         int size = 2 * radius + 1;
         return GaussianBlur(size, sigma);
     }
-}
+
+    public static readonly Filter Laplacian = new(kernel: new double[,]
+    {
+        {  0, -1,  0 },
+        { -1,  4, -1 },
+        {  0, -1,  0 }
+    }, factor: 1.0, bias: 0.0);
+
+    public static readonly Filter SobelX = new(kernel: new double[,]
+    {
+        { -1,  0,  1 },
+        { -2,  0,  2 },
+        { -1,  0,  1 }
+    }, factor: 1.0, bias: 128.0);
+
+    public static readonly Filter SobelY = new(kernel: new double[,]
+    {
+        { -1, -2, -1 },
+        {  0,  0,  0 },
+        {  1,  2,  1 }
+    }, factor: 1.0, bias: 128.0);
+
+    public static readonly Filter PrewittX = new(kernel: new double[,]
+    {
+        { -1,  0,  1 },
+        { -1,  0,  1 },
+        { -1,  0,  1 }
+    }, factor: 1.0, bias: 128.0);
+
+    public static readonly Filter PrewittY = new(kernel: new double[,]
+    {
+        { -1, -1, -1 },
+        {  0,  0,  0 },
+        {  1,  1,  1 }
+    }, factor: 1.0, bias: 128.0);
