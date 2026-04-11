@@ -5,16 +5,18 @@ using Convolution.Extensions;
 using SixLabors.ImageSharp.Processing;
 using Xunit;
 
-public class CompareSequentialImageSharp
+public class CompareImageSharpSequential
 {
     private static readonly ImageGenerator imageGenerator = new();
+    private static readonly FilterGenerator filterGenerator = new();
+
     [Fact]
     public void Apply_BoxBlur()
     {
         int radius = 1;
         byte tolerance = 2;
 
-        using var input = imageGenerator.Generate();
+        using var input = imageGenerator.Next();
 
         using var seqResult = Impl.Sequential.Apply(input, Filter.BoxBlur(radius));
         using var sharpResult = input.Clone(ctx => ctx.BoxBlur(radius));
@@ -28,7 +30,7 @@ public class CompareSequentialImageSharp
         double sigma = 1.5;
         byte tolerance = 2;
 
-        using var input = imageGenerator.Generate();
+        using var input = imageGenerator.Next();
 
         using var seqResult = Impl.Sequential.Apply(input, Filter.GaussianBlur(sigma));
         using var sharpResult = input.Clone(ctx => ctx.GaussianBlur((float)sigma));
