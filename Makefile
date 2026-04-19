@@ -4,7 +4,7 @@ deps-brew:
 
 clean:
 	dotnet clean
-	rm -rf Artifacts
+	rm -rf Artifacts/*
 
 .PHONY: test
 test:
