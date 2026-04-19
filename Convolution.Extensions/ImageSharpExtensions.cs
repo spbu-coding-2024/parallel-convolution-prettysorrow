@@ -42,5 +42,5 @@ public static class ImageSharpExtensions
             MathF.Abs(p1.A - p2.A) <= tolerance;
 
         return source.Equal(other, Comparer);
-}
+    }
 }
