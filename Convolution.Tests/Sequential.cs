@@ -6,14 +6,13 @@ using Xunit;
 
 public class Sequential
 {
-    private static readonly ImageGenerator imageGenerator = new();
+    private static readonly ImageGenerator ImageGenerator = new();
 
     [Fact]
     public void Apply_IdentityFilter_ReturnsSameImage()
     {
-        using var input = imageGenerator.Next();
-
-        using var result = Impl.Sequential.Apply(input, Filter.Identity);
+        using var input = ImageGenerator.Next();
+        using var result = Impl.Sequential.Apply(input, Filters.Identity);
 
         Assert.Equal(input.Width, result.Width);
         Assert.Equal(input.Height, result.Height);
@@ -21,10 +20,10 @@ public class Sequential
     }
 
     [Fact]
-    public void Apply_BoxBlur_ProducesDifferentImage()
+    public void Apply_BoxBlur_ReturnsDifferentImage()
     {
-        using var input = imageGenerator.Next();
-        using var result = Impl.Sequential.Apply(input, Filter.BoxBlur(radius: 1));
+        using var input = ImageGenerator.Next();
+        using var result = Impl.Sequential.Apply(input, Filters.BoxBlur(radius: 1));
 
         Assert.Equal(input.Width, result.Width);
         Assert.Equal(input.Height, result.Height);
