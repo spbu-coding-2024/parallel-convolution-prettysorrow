@@ -8,8 +8,8 @@ using Xunit;
 
 public class CompareSequentialParallel
 {
-    private static readonly ImageGenerator imageGenerator = new();
-    private static readonly FilterGenerator filterGenerator = new();
+    private static readonly ImageGenerator ImageGenerator = new();
+    private static readonly FilterGenerator FilterGenerator = new();
 
     private static void RunSingle(Image<Rgb24> image, Filter filter)
     {
@@ -21,65 +21,64 @@ public class CompareSequentialParallel
     [Fact]
     public void Apply_IdentityFilter()
     {
-        using var input = imageGenerator.Next();
-        var filter = Filter.Identity;
+        using var input = ImageGenerator.Next();
+        var filter = Filters.Identity;
         RunSingle(input, filter);
     }
 
     [Fact]
     public void Apply_BoxBlur()
     {
-        using var input = imageGenerator.Next();
-        var filter = Filter.BoxBlur(radius: 1);
+        using var input = ImageGenerator.Next();
+        var filter = Filters.BoxBlur(radius: 1);
         RunSingle(input, filter);
     }
-
 
     [Fact]
     public void Apply_GaussianBlur()
     {
-        using var input = imageGenerator.Next();
-        var filter = Filter.GaussianBlur(size: 3, sigma: 0.5);
+        using var input = ImageGenerator.Next();
+        var filter = Filters.GaussianBlur(sigma: 0.5);
         RunSingle(input, filter);
     }
 
     [Fact]
     public void Apply_SobelX()
     {
-        using var input = imageGenerator.Next();
-        var filter = Filter.SobelX;
+        using var input = ImageGenerator.Next();
+        var filter = Filters.SobelX;
         RunSingle(input, filter);
     }
 
     [Fact]
     public void Apply_SobelY()
     {
-        using var input = imageGenerator.Next();
-        var filter = Filter.SobelY;
+        using var input = ImageGenerator.Next();
+        var filter = Filters.SobelY;
         RunSingle(input, filter);
     }
 
     [Fact]
     public void Apply_PrewittX()
     {
-        using var input = imageGenerator.Next();
-        var filter = Filter.PrewittX;
+        using var input = ImageGenerator.Next();
+        var filter = Filters.PrewittX;
         RunSingle(input, filter);
     }
 
     [Fact]
     public void Apply_PrewittY()
     {
-        using var input = imageGenerator.Next();
-        var filter = Filter.PrewittY;
+        using var input = ImageGenerator.Next();
+        var filter = Filters.PrewittY;
         RunSingle(input, filter);
     }
 
     [Fact]
     public void Apply_RandomFilter5()
     {
-        using var input = imageGenerator.Next();
-        var filter = filterGenerator.Next(size: 5);
+        using var input = ImageGenerator.Next();
+        var filter = FilterGenerator.Next(size: 5);
         RunSingle(input, filter);
     }
 }
