@@ -33,16 +33,14 @@ public static class ImageSharpExtensions
         return true;
     }
 
-    public static bool Equal(this Image<Rgb24> source, Image<Rgb24> other, byte tolerance)
+    public static bool Equal(this Image<RgbaVector> source, Image<RgbaVector> other, float tolerance = 1e-5f) // TODO: is tolerance OK ??
     {
-        return source.Equal(other, (p1, p2) =>
-            Math.Abs(p1.R - p2.R) <= tolerance &&
-            Math.Abs(p1.G - p2.G) <= tolerance &&
-            Math.Abs(p1.B - p2.B) <= tolerance);
-    }
+        bool Comparer(RgbaVector p1, RgbaVector p2) =>
+            MathF.Abs(p1.R - p2.R) <= tolerance &&
+            MathF.Abs(p1.G - p2.G) <= tolerance &&
+            MathF.Abs(p1.B - p2.B) <= tolerance &&
+            MathF.Abs(p1.A - p2.A) <= tolerance;
 
-    public static bool Equal<TPixel>(this Image<TPixel> source, Image<TPixel> other)
-        where TPixel : unmanaged, IPixel<TPixel>
-        => source.Equal(other, (p1, p2) => p1.Equals(p2));
+        return source.Equal(other, Comparer);
 }
 }
