@@ -11,11 +11,11 @@ public class CompareSequentialParallel
     private static readonly ImageGenerator ImageGenerator = new();
     private static readonly FilterGenerator FilterGenerator = new();
 
-    private static void RunSingle(Image<Rgb24> image, Filter filter)
+    private static void RunSingle(Image<RgbaVector> image, Filter filter)
     {
         using var parallelResult = Impl.Parallel.Apply(image, filter);
         using var sequentialResult = Impl.Sequential.Apply(image, filter);
-        Assert.True(parallelResult.Equal(sequentialResult, tolerance: 2));
+        Assert.True(parallelResult.Equal(sequentialResult));
     }
 
     [Fact]
