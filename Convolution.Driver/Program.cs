@@ -1,9 +1,11 @@
-﻿using System.CommandLine;
+﻿#pragma warning disable SA1200 // Using directives should be placed correctly
+
+using System.CommandLine;
+using Convolution.Core;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Convolution.Core;
 
-void SaveImageRgb24(Image<Rgb24> image, string path)
+void SaveImage(Image<RgbaVector> image, string path)
 {
     string extension = Path.GetExtension(path).ToLowerInvariant();
     switch (extension)
@@ -19,82 +21,68 @@ void SaveImageRgb24(Image<Rgb24> image, string path)
     }
 }
 
-Image<Rgb24> GenerateImage(int width, int height, int? seed, int shapeCount)
-{
-    var generator = new ImageGenerator(seed);
-    using var rgbaImage = generator.Generate(width, height, shapeCount);
-    var rgbImage = new Image<Rgb24>(width, height);
-    for (int y = 0; y < height; y++)
-    {
-        for (int x = 0; x < width; x++)
-        {
-            var pixel = rgbaImage[x, y];
-            rgbImage[x, y] = new Rgb24(pixel.R, pixel.G, pixel.B);
-        }
-    }
-    return rgbImage;
-}
-
-void ApplyFilterAndSave(Image<Rgb24> image, string outputPath, string filterName)
+void ApplyFilterAndSave(Image<RgbaVector> image, string outputPath, string filterName)
 {
     Filter filter = filterName.ToLowerInvariant() switch
     {
-        "id" => Filter.Identity,
-        "edges" => Filter.Edges,
-        "sharpen" => Filter.Sharpen,
+        "id" => Filters.Identity,
+        "edges" => Filters.Edges,
+        "left" => Filters.ShiftLeft,
+        "right" => Filters.ShiftRight,
+        "top" => Filters.ShiftTop,
+        "bottom" => Filters.ShiftBottom,
         _ => throw new ArgumentException($"unknown filter '{filterName}'")
     };
 
-    using var resultImage = Convolution.Impl.Sequential.Apply(image, filter);
-    SaveImageRgb24(resultImage, outputPath);
+    using var resultImage = Convolution.Impl.Parallel.Apply(image, filter);
+    SaveImage(resultImage, outputPath);
     Console.WriteLine($"filter '{filterName}' has been applied. result is in {Path.GetFullPath(outputPath)}");
 }
-
 
 var generateOption = new Option<bool>("--generate")
 {
     Description = "generate",
-    DefaultValueFactory = _ => false
+    DefaultValueFactory = _ => false,
 };
 
 var widthOption = new Option<int>("--width")
 {
     Description = "width of generated image",
-    DefaultValueFactory = _ => 800
+    DefaultValueFactory = _ => 800,
 };
 
 var heightOption = new Option<int>("--height")
 {
     Description = "height of generated image",
-    DefaultValueFactory = _ => 600
+    DefaultValueFactory = _ => 600,
 };
 
 var seedOption = new Option<int?>("--seed")
 {
-    Description = "generating seed"
+    Description = "generating seed",
 };
 
 var countOption = new Option<int>("--count")
 {
     Description = "amount of objects on generated image",
-    DefaultValueFactory = _ => 20
+    DefaultValueFactory = _ => 20,
 };
 
 var filterOption = new Option<string>("--filter")
 {
     Description = "filter",
-    DefaultValueFactory = _ => "id"
+    DefaultValueFactory = _ => "id",
 };
 
 var inputOption = new Option<string>("--input")
 {
-    Description = "input path"
+    Description = "input path",
 };
 
 var outputOption = new Option<string>("--output")
 {
     Description = "output path",
-    DefaultValueFactory = _ => "output.png"
+    DefaultValueFactory = _ => "output.png",
 };
 
 var rootCommand = new RootCommand("driver")
@@ -106,7 +94,7 @@ var rootCommand = new RootCommand("driver")
     countOption,
     filterOption,
     inputOption,
-    outputOption
+    outputOption,
 };
 
 rootCommand.SetAction(parseResult =>
@@ -140,8 +128,8 @@ rootCommand.SetAction(parseResult =>
             int? seed = parseResult.GetValue(seedOption);
             int shapeCount = parseResult.GetValue(countOption);
 
-            using var generatedImage = GenerateImage(width, height, seed, shapeCount);
-            ApplyFilterAndSave(generatedImage, output, filterName);
+            using var image = new ImageGenerator(seed).Next(width, height, shapeCount);
+            ApplyFilterAndSave(image, output, filterName);
         }
         else
         {
@@ -152,7 +140,7 @@ rootCommand.SetAction(parseResult =>
                 return;
             }
 
-            using var inputImage = Image.Load<Rgb24>(input);
+            using var inputImage = Image.Load<RgbaVector>(input);
             ApplyFilterAndSave(inputImage, output, filterName);
         }
     }
