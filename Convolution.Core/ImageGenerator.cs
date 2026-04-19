@@ -5,74 +5,55 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Drawing;
-using System.Security.Cryptography.X509Certificates;
 
 public class ImageGenerator(int? seed = null)
 {
-    private readonly Random _random = seed.HasValue ? new Random(seed.Value) : new Random();
+    private readonly Random random = seed.HasValue ? new Random(seed.Value) : new Random();
 
-    public Image<Rgb24> Next(int width = 800, int height = 600, int shapeCount = 20)
+    private Color NextColor() => Color.FromRgb(
+        (byte)this.random.Next(256),
+        (byte)this.random.Next(256),
+        (byte)this.random.Next(256));
+
+    public Image<RgbaVector> Next(int width = 800, int height = 600, int shapeCount = 20)
     {
-        var image = new Image<Rgb24>(width, height);
-
-        var backgroundColor = new Rgb24(
-            (byte)this._random.Next(256),
-            (byte)this._random.Next(256),
-            (byte)this._random.Next(256)
-        );
-
-        image.Mutate(ctx => ctx.BackgroundColor(backgroundColor));
-
+        var image = new Image<RgbaVector>(width, height);
+        image.Mutate(ctx => ctx.BackgroundColor(this.NextColor()));
         for (int i = 0; i < shapeCount; i++)
+        {
             this.DrawRandomShape(image);
+        }
 
         return image;
     }
 
-    private void DrawRandomShape(Image<Rgb24> image)
+    private void DrawRandomShape(Image<RgbaVector> image)
     {
-        var color = new Rgb24(
-            (byte)this._random.Next(256),
-            (byte)this._random.Next(256),
-            (byte)this._random.Next(256)
-        );
-
-        var (x, y) = (this._random.Next(image.Width), this._random.Next(image.Height));
-
+        var color = this.NextColor();
+        var (x, y) = (this.random.Next(image.Width), this.random.Next(image.Height));
         image.Mutate(ctx =>
         {
-            switch (this._random.Next(3))
+            switch (this.random.Next(3))
             {
                 case 0:
-                    var rectangle = new RectangleF(
+                    ctx.Fill(color, new RectangleF(
                         x,
                         y,
-                        width: this._random.Next(20, 200),
-                        height: this._random.Next(20, 200)
-                    );
-
-                    ctx.Fill(color, rectangle);
+                        width: this.random.Next(20, 200),
+                        height: this.random.Next(20, 200)));
                     break;
-
                 case 1:
-                    var ellipse = new EllipsePolygon(
+                    ctx.Fill(color, new EllipsePolygon(
                         x,
                         y,
-                        radius: this._random.Next(10, 150)
-                    );
-
-                    ctx.Fill(color, ellipse);
+                        radius: this.random.Next(10, 150)));
                     break;
-
                 case 2:
-                    var triangle = new RegularPolygon(
+                    ctx.Fill(color, new RegularPolygon(
                         x,
                         y,
                         vertices: 3,
-                        radius: this._random.Next(10, 150)
-                    );
-
-                    ctx.Fill(color, triangle);
+                        radius: this.random.Next(10, 150)));
                     break;
             }
         });
