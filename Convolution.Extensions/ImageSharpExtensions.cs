@@ -11,9 +11,7 @@ public static class ImageSharpExtensions
     {
         if (ReferenceEquals(source, other))
             return true;
-
-        if (other is null)
-            return false;
+        }
 
         if (source.Width != other.Width || source.Height != other.Height)
             return false;
