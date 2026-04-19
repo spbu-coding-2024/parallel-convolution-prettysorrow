@@ -17,38 +17,39 @@ public class RandomBenchmark
     [Params(3, 5, 21)]
     public int FilterSize { get; set; }
 
-    private readonly ImageGenerator _imageGenerator = new(seed: 42);
-    private readonly FilterGenerator _filterGenerator = new(seed: 42);
-    private Image<Rgb24> _sourceImage = null!;
-    private Filter _filter = null!;
+    private readonly ImageGenerator imageGenerator = new(seed: 42);
+    private readonly FilterGenerator filterGenerator = new(seed: 42);
+    private Image<RgbaVector> sourceImage = null!;
+    private Filter filter = null!;
 
     [GlobalSetup]
     public void Setup()
     {
-        _sourceImage = _imageGenerator.Next(width: ImageSize, height: ImageSize);
-        _filter = _filterGenerator.Next(size: FilterSize);
+        this.sourceImage = this.imageGenerator.Next(width: this.ImageSize, height: this.ImageSize);
+        this.filter = this.filterGenerator.Next(size: this.FilterSize);
     }
-
 
     [GlobalCleanup]
     public void Cleanup()
-        => _sourceImage.Dispose();
-
+        => this.sourceImage.Dispose();
 
     [Benchmark(Baseline = true)]
-    public Image<Rgb24> Sequential()
-        => Impl.Sequential.Apply(_sourceImage, _filter);
-
-
-    [Benchmark]
-    public Image<Rgb24> Parallel_Rows()
-        => Impl.Parallel.ApplyRows(_sourceImage, _filter);
+    public Image<RgbaVector> Sequential()
+        => Impl.Sequential.Apply(this.sourceImage, this.filter);
 
     [Benchmark]
-    public Image<Rgb24> Parallel_Columns()
-        => Impl.Parallel.ApplyColumns(_sourceImage, _filter);
+    public Image<RgbaVector> Parallel_Rows()
+        => Impl.Parallel.ApplyRows(this.sourceImage, this.filter);
 
     [Benchmark]
-    public Image<Rgb24> Parallel_Tiles()
-        => Impl.Parallel.ApplyTiles(_sourceImage, _filter, tileSize: 64);
+    public Image<RgbaVector> Parallel_Columns()
+        => Impl.Parallel.ApplyColumns(this.sourceImage, this.filter);
+
+    [Benchmark]
+    public Image<RgbaVector> Parallel_Tiles_Size8()
+        => Impl.Parallel.ApplyTiles(this.sourceImage, this.filter, tileSize: 8);
+
+    [Benchmark]
+    public Image<RgbaVector> Parallel_Tiles_Size128()
+   => Impl.Parallel.ApplyTiles(this.sourceImage, this.filter, tileSize: 128);
 }
