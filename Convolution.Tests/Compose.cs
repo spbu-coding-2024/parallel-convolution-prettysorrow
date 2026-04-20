@@ -27,8 +27,8 @@ public class Compose
     public void Compose_Commutativity_Wrap()
     {
         using var image = ImageGenerator.Next();
-        var filter1 = FilterGenerator.Next(size: 3, edgeMode: Filter.EdgeMode.Wrap);
-        var filter2 = FilterGenerator.Next(size: 3, edgeMode: Filter.EdgeMode.Wrap);
+        var filter1 = FilterGenerator.Next(size: 3, edgeMode: EdgeMode.Wrap);
+        var filter2 = FilterGenerator.Next(size: 3, edgeMode: EdgeMode.Wrap);
 
         var composition1 = Filter.Compose(filter1, filter2);
         var composition2 = Filter.Compose(filter2, filter1);
@@ -43,8 +43,8 @@ public class Compose
     public void Compose_Commutativity_Clamp()
     {
         using var image = ImageGenerator.Next();
-        var filter1 = FilterGenerator.Next(size: 3, edgeMode: Filter.EdgeMode.Clamp);
-        var filter2 = FilterGenerator.Next(size: 3, edgeMode: Filter.EdgeMode.Clamp);
+        var filter1 = FilterGenerator.Next(size: 3, edgeMode: EdgeMode.Clamp);
+        var filter2 = FilterGenerator.Next(size: 3, edgeMode: EdgeMode.Clamp);
 
         var composition1 = Filter.Compose(filter1, filter2);
         var composition2 = Filter.Compose(filter2, filter1);
@@ -59,8 +59,8 @@ public class Compose
     public void Compose_Compositionality_Wrap()
     {
         using var image = ImageGenerator.Next();
-        var filter1 = FilterGenerator.Next(size: 3, edgeMode: Filter.EdgeMode.Wrap);
-        var filter2 = FilterGenerator.Next(size: 3, edgeMode: Filter.EdgeMode.Wrap);
+        var filter1 = FilterGenerator.Next(size: 3, edgeMode: EdgeMode.Wrap);
+        var filter2 = FilterGenerator.Next(size: 3, edgeMode: EdgeMode.Wrap);
 
         var composition = Filter.Compose(filter1, filter2);
 
