@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 import seaborn
 import os
 
-input_path = os.environ["CSV_REPORT"]
+repo_root = os.environ["REPO_ROOT"]
+input_path = os.environ["BENCHMARK_REPORT_CSV"]
 
-os.makedirs("Artifacts/results", exist_ok=True)
-output_path = os.path.join("Artifacts/results", os.path.basename(input_path).replace(".csv", ".png"))
+os.makedirs(f"{repo_root}/Artifacts/RandomBenchmark", exist_ok=True)
+output_path = os.path.join(f"{repo_root}/Artifacts/RandomBenchmark", os.path.basename(input_path).replace(".csv", ".png"))
 
 df = pandas.read_csv(input_path)
 

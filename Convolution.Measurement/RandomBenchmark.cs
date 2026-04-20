@@ -9,6 +9,7 @@ using SixLabors.ImageSharp.PixelFormats;
 [MarkdownExporter]
 [CsvExporter]
 [SimpleJob(warmupCount: 1, iterationCount: 5)]
+[Config(typeof(BenchmarkConfig))]
 public class RandomBenchmark
 {
     [Params(512, 1024)]
