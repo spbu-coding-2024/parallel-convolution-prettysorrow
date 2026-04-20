@@ -103,7 +103,22 @@ public class Compose
         using var lrl = Impl.Sequential.Apply(image, Filter.Compose(Filter.Compose(Filters.ShiftLeft, Filters.ShiftRight), Filters.ShiftLeft));
         using var rll = Impl.Sequential.Apply(image, Filter.Compose(Filter.Compose(Filters.ShiftRight, Filters.ShiftLeft), Filters.ShiftLeft));
 
-        Assert.True(llr.Equal(lrl));
-        Assert.True(lrl.Equal(rll));
+        Assert.True(llr.IsEqualTo(lrl));
+        Assert.True(lrl.IsEqualTo(rll));
+    }
+
+    [Fact]
+    public void Compose_TopRight()
+    {
+        using var image = ImageGenerator.Next();
+
+        using var applyComposeTopRight = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftTop(10), Filters.ShiftRight(10)));
+        using var applyComposeRightTop = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftRight(10), Filters.ShiftTop(10)));
+        using var applyApplyTopRight = Impl.Sequential.Apply(Impl.Sequential.Apply(image, Filters.ShiftTop(10)), Filters.ShiftRight(10));
+        using var applyApplyRightTop = Impl.Sequential.Apply(Impl.Sequential.Apply(image, Filters.ShiftRight(10)), Filters.ShiftTop(10));
+
+        Assert.True(applyComposeTopRight.IsEqualTo(applyComposeRightTop));
+        Assert.True(applyComposeRightTop.IsEqualTo(applyApplyTopRight));
+        Assert.True(applyApplyTopRight.IsEqualTo(applyApplyRightTop));
     }
 }

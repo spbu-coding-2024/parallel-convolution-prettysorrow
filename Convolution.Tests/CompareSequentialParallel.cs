@@ -82,6 +82,14 @@ public class CompareSequentialParallel
     {
         using var input = ImageGenerator.Next();
         var filter = FilterGenerator.Next(size: 5);
-        RunSingle(input, filter);
+        RunSingle(image, filter);
+    }
+
+    [Fact]
+    public void Apply_RandomFilter25()
+    {
+        using var image = ImageGenerator.Next();
+        var filter = FilterGenerator.Next(size: 25);
+        RunSingle(image, filter);
     }
 }
