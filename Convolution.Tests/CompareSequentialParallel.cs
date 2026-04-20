@@ -24,23 +24,23 @@ public class CompareSequentialParallel
     [Fact]
     public void Apply_IdentityFilter()
     {
-        using var input = ImageGenerator.Next();
+        using var image = ImageGenerator.Next();
         var filter = Filters.Identity;
-        RunSingle(input, filter);
+        RunSingle(image, filter);
     }
 
     [Fact]
     public void Apply_BoxBlur()
     {
-        using var input = ImageGenerator.Next();
+        using var image = ImageGenerator.Next();
         var filter = Filters.BoxBlur(radius: 1);
-        RunSingle(input, filter);
+        RunSingle(image, filter);
     }
 
     [Fact]
     public void Apply_GaussianBlur()
     {
-        using var input = ImageGenerator.Next();
+        using var image = ImageGenerator.Next();
         var filter = Filters.GaussianBlur(sigma: 0.5f);
         RunSingle(image, filter);
     }
@@ -48,39 +48,39 @@ public class CompareSequentialParallel
     [Fact]
     public void Apply_SobelX()
     {
-        using var input = ImageGenerator.Next();
+        using var image = ImageGenerator.Next();
         var filter = Filters.SobelX;
-        RunSingle(input, filter);
+        RunSingle(image, filter);
     }
 
     [Fact]
     public void Apply_SobelY()
     {
-        using var input = ImageGenerator.Next();
+        using var image = ImageGenerator.Next();
         var filter = Filters.SobelY;
-        RunSingle(input, filter);
+        RunSingle(image, filter);
     }
 
     [Fact]
     public void Apply_PrewittX()
     {
-        using var input = ImageGenerator.Next();
+        using var image = ImageGenerator.Next();
         var filter = Filters.PrewittX;
-        RunSingle(input, filter);
+        RunSingle(image, filter);
     }
 
     [Fact]
     public void Apply_PrewittY()
     {
-        using var input = ImageGenerator.Next();
+        using var image = ImageGenerator.Next();
         var filter = Filters.PrewittY;
-        RunSingle(input, filter);
+        RunSingle(image, filter);
     }
 
     [Fact]
     public void Apply_RandomFilter5()
     {
-        using var input = ImageGenerator.Next();
+        using var image = ImageGenerator.Next();
         var filter = FilterGenerator.Next(size: 5);
         RunSingle(image, filter);
     }
