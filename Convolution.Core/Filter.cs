@@ -1,22 +1,56 @@
 namespace Convolution.Core;
 
-public class Filter
+/// <summary>
+/// Specifies the edge handling mode for image convolution.
+/// </summary>
+public enum EdgeMode
 {
-    public double[,] Kernel { get; }
+    /// <summary>
+    /// Pixels outside the image boundaries are clamped to the nearest edge pixel.
+    /// </summary>
+    Clamp,
 
-    public double Factor { get; }
+    /// <summary>
+    /// Pixels outside the image boundaries are wrapped around to the opposite edge.
+    /// </summary>
+    Wrap,
+}
 
-    public double Bias { get; }
+/// <summary>
+/// Represents a convolution filter kernel with associated processing parameters.
+/// </summary>
+public sealed class Filter
+{
+    /// <summary>
+    /// Gets the filter kernel matrix.
+    /// </summary>
+    public float[,] Kernel { get; }
 
-    public enum EdgeMode
-    {
-        Clamp,
-        Wrap
-    }
+    /// <summary>
+    /// Gets the factor multiplier applied to the convolution result.
+    /// </summary>
+    public float Factor { get; }
 
-    public EdgeMode edgeMode { get; }
+    /// <summary>
+    /// Gets the bias value added to the convolution result.
+    /// </summary>
+    public float Bias { get; }
 
-    public Filter(double[,] kernel, double factor = 1.0, double bias = 0.0, EdgeMode edgeMode = EdgeMode.Clamp)
+    /// <summary>
+    /// Gets the edge handling mode for pixels outside image boundaries.
+    /// </summary>
+    public EdgeMode EdgeMode { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Filter"/> class.
+    /// </summary>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="kernel"/> is not square (first and second dimensions differ).
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the size of <paramref name="kernel"/> is even (must be odd).
+    /// </exception>
+    public Filter(float[,] kernel, float factor = 1.0f, float bias = 0.0f, EdgeMode edgeMode = EdgeMode.Clamp)
     {
         if (kernel.GetLength(0) != kernel.GetLength(1))
         {
@@ -31,12 +65,18 @@ public class Filter
         this.Kernel = kernel;
         this.Factor = factor;
         this.Bias = bias;
-        this.edgeMode = edgeMode;
+        this.EdgeMode = edgeMode;
     }
 
-    public static Filter Compose(Filter f1, Filter f2)
+    /// <summary>
+    /// Composes two filters by convolving their kernels.
+    /// </summary>
+    /// <exception cref="ArgumentException">
+    /// Thrown when filters edge handling modes differ.
+    /// </exception>
+    public static Filter Compose(Filter a, Filter b)
     {
-        if (f1.edgeMode != f2.edgeMode)
+        if (a.EdgeMode != b.EdgeMode)
         {
             throw new ArgumentException("Filters edge handling mode must be the same.");
         }
