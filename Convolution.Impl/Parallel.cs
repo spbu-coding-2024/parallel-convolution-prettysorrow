@@ -53,8 +53,10 @@ public static class Parallel
     /// <summary>
     /// Applies a convolution filter to an image using tiled parallel processing.
     /// </summary>
-    public static Image<RgbaVector> ApplyTiles(Image<RgbaVector> source, Filter filter)
+    public static Image<RgbaVector> ApplyTiles(Image<RgbaVector> source, Filter filter, int tileSize)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(tileSize);
+
         Image<RgbaVector> result = new(source.Width, source.Height);
         int tileSize_ = EstimateOptimalTileSize(source.Width, source.Height); // TODO: weird
         int tilesAcross = (source.Width + tileSize_ - 1) / tileSize_; // ceiled (source.Width / tileSize_)
@@ -73,6 +75,15 @@ public static class Parallel
         });
 
         return result;
+    }
+
+    /// <summary>
+    /// Applies a convolution filter to an image using tiled parallel processing.
+    /// </summary>
+    public static Image<RgbaVector> ApplyTiles(Image<RgbaVector> source, Filter filter)
+    {
+        int tileSize = EstimateOptimalTileSize(source.Width, source.Height);
+        return ApplyTiles(source, filter, tileSize);
     }
 
     private static int EstimateOptimalTileSize(int width, int height)
