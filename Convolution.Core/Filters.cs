@@ -57,58 +57,66 @@ public static class Filters
         { -1, -1, -1 },
         {  0,  0,  0 },
         {  1,  1,  1 },
-    }, factor: 1.0, bias: 128.0);
+    }, factor: 1, bias: 128);
 
-    public static readonly Filter ShiftRight = new(
-        kernel: new double[,]
-        {
-            { 0, 0, 0 },
-            { 0, 0, 1 },
-            { 0, 0, 0 },
-        },
-        factor: 1.0,
-        bias: 0.0,
-        edgeMode: EdgeMode.Wrap);
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when the <paramref name="distance"/> is less than 0.
+    /// </exception>
+    public static Filter ShiftRight(int distance = 1)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(distance, 0, nameof(distance));
 
-    public static readonly Filter ShiftLeft = new(
-        kernel: new double[,]
-        {
-            { 0, 0, 0 },
-            { 1, 0, 0 },
-            { 0, 0, 0 },
-        },
-        factor: 1.0,
-        bias: 0.0,
-        edgeMode: EdgeMode.Wrap);
+        int size = (2 * distance) + 1;
+        var kernel = new float[size, size];
+        kernel[distance, size - 1] = 1.0f;
+        return new Filter(kernel, factor: 1, bias: 0, EdgeMode.Wrap);
+    }
 
-    public static readonly Filter ShiftTop = new(
-        kernel: new double[,]
-        {
-                { 0, 1, 0 },
-                { 0, 0, 0 },
-                { 0, 0, 0 },
-        },
-        factor: 1.0,
-        bias: 0.0,
-        edgeMode: EdgeMode.Wrap);
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when the <paramref name="distance"/> is less than 0.
+    /// </exception>
+    public static Filter ShiftLeft(int distance = 1)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(distance, 0, nameof(distance));
 
-    public static readonly Filter ShiftBottom = new(
-        kernel: new double[,]
-        {
-            { 0, 0, 0 },
-            { 0, 0, 0 },
-            { 0, 1, 0 },
-        },
-        factor: 1.0,
-        bias: 0.0,
-        edgeMode: EdgeMode.Wrap);
+        int size = (2 * distance) + 1;
+        var kernel = new float[size, size];
+        kernel[distance, 0] = 1;
+        return new Filter(kernel, factor: 1, bias: 0, EdgeMode.Wrap);
+    }
 
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when the <paramref name="distance"/> is less than 0.
+    /// </exception>
+    public static Filter ShiftTop(int distance = 1)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(distance, 0, nameof(distance));
+
+        int size = (2 * distance) + 1;
+        var kernel = new float[size, size];
+        kernel[0, distance] = 1;
+        return new Filter(kernel, factor: 1, bias: 0, EdgeMode.Wrap);
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when the <paramref name="distance"/> is less than 0.
+    /// </exception>
+    public static Filter ShiftBottom(int distance = 1)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(distance, 0, nameof(distance));
+
+        int size = (2 * distance) + 1;
+        var kernel = new float[size, size];
+        kernel[size - 1, distance] = 1;
+        return new Filter(kernel, factor: 1, bias: 0, EdgeMode.Wrap);
+    }
+
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when the <paramref name="radius"/> is less than 1.
+    /// </exception>
     public static Filter BoxBlur(int radius)
     {
-        if (radius < 1)
-        {
-            throw new ArgumentException("Radius must be at least 1", nameof(radius));
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(radius, 1, nameof(radius));
 
         int size = (2 * radius) + 1;
         float weight = 1.0f / (size * size);

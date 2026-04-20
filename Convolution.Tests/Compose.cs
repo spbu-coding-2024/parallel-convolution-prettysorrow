@@ -75,8 +75,8 @@ public class Compose
     {
         using var image = ImageGenerator.Next();
 
-        using var leftRight = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftLeft, Filters.ShiftRight));
-        using var rightLeft = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftRight, Filters.ShiftLeft));
+        using var leftRight = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftLeft(5), Filters.ShiftRight(5)));
+        using var rightLeft = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftRight(5), Filters.ShiftLeft(5)));
 
         Assert.True(leftRight.IsEqualTo(image));
         Assert.True(rightLeft.IsEqualTo(image));
@@ -87,8 +87,8 @@ public class Compose
     {
         using var image = ImageGenerator.Next();
 
-        using var topBottom = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftTop, Filters.ShiftBottom));
-        using var bottomTop = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftBottom, Filters.ShiftTop));
+        using var topBottom = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftTop(5), Filters.ShiftBottom(5)));
+        using var bottomTop = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftBottom(5), Filters.ShiftTop(5)));
 
         Assert.True(topBottom.IsEqualTo(image));
         Assert.True(bottomTop.IsEqualTo(image));
@@ -99,9 +99,9 @@ public class Compose
     {
         using var image = ImageGenerator.Next();
 
-        using var llr = Impl.Sequential.Apply(image, Filter.Compose(Filter.Compose(Filters.ShiftLeft, Filters.ShiftLeft), Filters.ShiftRight));
-        using var lrl = Impl.Sequential.Apply(image, Filter.Compose(Filter.Compose(Filters.ShiftLeft, Filters.ShiftRight), Filters.ShiftLeft));
-        using var rll = Impl.Sequential.Apply(image, Filter.Compose(Filter.Compose(Filters.ShiftRight, Filters.ShiftLeft), Filters.ShiftLeft));
+        using var llr = Impl.Sequential.Apply(image, Filter.Compose(Filter.Compose(Filters.ShiftLeft(5), Filters.ShiftLeft(5)), Filters.ShiftRight(5)));
+        using var lrl = Impl.Sequential.Apply(image, Filter.Compose(Filter.Compose(Filters.ShiftLeft(5), Filters.ShiftRight(5)), Filters.ShiftLeft(5)));
+        using var rll = Impl.Sequential.Apply(image, Filter.Compose(Filter.Compose(Filters.ShiftRight(5), Filters.ShiftLeft(5)), Filters.ShiftLeft(5)));
 
         Assert.True(llr.IsEqualTo(lrl));
         Assert.True(lrl.IsEqualTo(rll));
