@@ -18,7 +18,7 @@ public class CompareSequentialParallel
     {
         using var parallelResult = Impl.Parallel.Apply(image, filter);
         using var sequentialResult = Impl.Sequential.Apply(image, filter);
-        Assert.True(parallelResult.Equal(sequentialResult));
+        Assert.True(parallelResult.IsEqualTo(sequentialResult));
     }
 
     [Fact]

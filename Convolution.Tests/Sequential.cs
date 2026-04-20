@@ -19,7 +19,7 @@ public class Sequential
 
         Assert.Equal(input.Width, result.Width);
         Assert.Equal(input.Height, result.Height);
-        Assert.True(input.Equal(result));
+        Assert.True(input.IsEqualTo(result));
     }
 
     [Fact]
@@ -31,6 +31,6 @@ public class Sequential
         Assert.Equal(input.Width, result.Width);
         Assert.Equal(input.Height, result.Height);
 
-        Assert.False(input.Equal(result));
+        Assert.False(input.IsEqualTo(result));
     }
 }

@@ -22,7 +22,7 @@ public class CompareImageSharpSequential
         using var seqResult = Impl.Sequential.Apply(input, Filters.BoxBlur(radius));
         using var sharpResult = input.Clone(ctx => ctx.BoxBlur(radius));
 
-        Assert.True(seqResult.Equal(sharpResult));
+        Assert.True(seqResult.IsEqualTo(sharpResult));
     }
 
     [Fact]
@@ -35,6 +35,6 @@ public class CompareImageSharpSequential
         using var seqResult = Impl.Sequential.Apply(input, Filters.GaussianBlur(sigma));
         using var sharpResult = input.Clone(ctx => ctx.GaussianBlur((float)sigma));
 
-        Assert.True(seqResult.Equal(sharpResult));
+        Assert.True(seqResult.IsEqualTo(sharpResult));
     }
 }

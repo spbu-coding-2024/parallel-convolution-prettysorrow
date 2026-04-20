@@ -20,7 +20,7 @@ public class Compose
         var composition = Filter.Compose(Filters.Identity, Filters.Identity);
         using var output = Impl.Sequential.Apply(image, composition);
 
-        Assert.True(output.Equal(image));
+        Assert.True(output.IsEqualTo(image));
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class Compose
         using var output1 = Impl.Sequential.Apply(image, composition1);
         using var output2 = Impl.Sequential.Apply(image, composition2);
 
-        Assert.True(output1.Equal(output2));
+        Assert.True(output1.IsEqualTo(output2));
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class Compose
         using var output1 = Impl.Sequential.Apply(image, composition1);
         using var output2 = Impl.Sequential.Apply(image, composition2);
 
-        Assert.True(output1.Equal(output2));
+        Assert.True(output1.IsEqualTo(output2));
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class Compose
         using var output1 = Impl.Sequential.Apply(Impl.Sequential.Apply(image, filter1), filter2);
         using var output2 = Impl.Sequential.Apply(image, composition);
 
-        Assert.True(output1.Equal(output2));
+        Assert.True(output1.IsEqualTo(output2));
     }
 
     [Fact]
@@ -78,8 +78,8 @@ public class Compose
         using var leftRight = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftLeft, Filters.ShiftRight));
         using var rightLeft = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftRight, Filters.ShiftLeft));
 
-        Assert.True(leftRight.Equal(image));
-        Assert.True(rightLeft.Equal(image));
+        Assert.True(leftRight.IsEqualTo(image));
+        Assert.True(rightLeft.IsEqualTo(image));
     }
 
     [Fact]
@@ -90,8 +90,8 @@ public class Compose
         using var topBottom = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftTop, Filters.ShiftBottom));
         using var bottomTop = Impl.Sequential.Apply(image, Filter.Compose(Filters.ShiftBottom, Filters.ShiftTop));
 
-        Assert.True(topBottom.Equal(image));
-        Assert.True(bottomTop.Equal(image));
+        Assert.True(topBottom.IsEqualTo(image));
+        Assert.True(bottomTop.IsEqualTo(image));
     }
 
     [Fact]
