@@ -1,3 +1,5 @@
+#pragma warning disable SA1600 // Elements should be documented
+
 namespace Convolution.Measurement;
 
 using BenchmarkDotNet.Attributes;
@@ -5,6 +7,9 @@ using Convolution.Core;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
+/// <summary>
+/// Benchmark which runs on random generated images and compares different implementations.
+/// </summary>
 [MemoryDiagnoser]
 [MarkdownExporter]
 [CsvExporter]
