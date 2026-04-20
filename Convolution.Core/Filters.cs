@@ -132,6 +132,9 @@ public static class Filters
         return new Filter(kernel, factor: 1.0, bias: 0.0);
     }
 
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when the <paramref name="sigma"/> is less than 0.
+    /// </exception>
     public static Filter GaussianBlur(float sigma)
     {
         if (sigma <= 0)
