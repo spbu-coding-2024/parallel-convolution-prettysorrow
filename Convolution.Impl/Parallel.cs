@@ -5,11 +5,20 @@ using Convolution.Extensions;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
+/// <summary>
+/// Provides parallel image convolution implementations.
+/// </summary>
 public static class Parallel
 {
+    /// <summary>
+    /// Applies a convolution filter to an image using row-by-row parallel processing.
+    /// </summary>
     public static Image<RgbaVector> Apply(Image<RgbaVector> source, Filter filter)
         => ApplyRows(source, filter);
 
+    /// <summary>
+    /// Applies a convolution filter to an image using row-by-row parallel processing.
+    /// </summary>
     public static Image<RgbaVector> ApplyRows(Image<RgbaVector> source, Filter filter)
     {
         Image<RgbaVector> result = new(source.Width, source.Height);
@@ -24,6 +33,9 @@ public static class Parallel
         return result;
     }
 
+    /// <summary>
+    /// Applies a convolution filter to an image using column-by-column parallel processing.
+    /// </summary>
     public static Image<RgbaVector> ApplyColumns(Image<RgbaVector> source, Filter filter)
     {
         Image<RgbaVector> result = new(source.Width, source.Height);
@@ -38,10 +50,13 @@ public static class Parallel
         return result;
     }
 
-    public static Image<RgbaVector> ApplyTiles(Image<RgbaVector> source, Filter filter, int? tileSize)
+    /// <summary>
+    /// Applies a convolution filter to an image using tiled parallel processing.
+    /// </summary>
+    public static Image<RgbaVector> ApplyTiles(Image<RgbaVector> source, Filter filter)
     {
         Image<RgbaVector> result = new(source.Width, source.Height);
-        int tileSize_ = tileSize ?? EstimateOptimalTileSize(source.Width, source.Height); // TODO: weird
+        int tileSize_ = EstimateOptimalTileSize(source.Width, source.Height); // TODO: weird
         int tilesAcross = (source.Width + tileSize_ - 1) / tileSize_; // ceiled (source.Width / tileSize_)
         int tilesDown = (source.Height + tileSize_ - 1) / tileSize_;  // ceiled (source.Height / tileSize_)
         int totalTiles = tilesAcross * tilesDown;
