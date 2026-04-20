@@ -15,21 +15,21 @@ public class FilterGenerator(int? seed = null)
     /// </exception>
     public Filter Next(
         int size = 5,
-        double factor = 1.0,
-        double bias = 0.0,
-        Filter.EdgeMode edgeMode = Filter.EdgeMode.Clamp)
+        float factor = 1.0f,
+        float bias = 0.0f,
+        EdgeMode edgeMode = EdgeMode.Clamp)
     {
         if (size % 2 == 0)
         {
             throw new ArgumentException("Kernel size must be odd.", nameof(size));
         }
 
-        var kernel = new double[size, size];
+        var kernel = new float[size, size];
         for (int i = 0; i < size; i++)
         {
             for (int j = 0; j < size; j++)
             {
-                kernel[i, j] = (this.random.NextDouble() * 2) - 1; // (0, 1) ~> (-1, 1)
+                kernel[i, j] = (float)((this.random.NextDouble() * 2) - 1); // (0, 1) ~> (-1, 1)
             }
         }
 

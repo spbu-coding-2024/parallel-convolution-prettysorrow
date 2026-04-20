@@ -28,12 +28,12 @@ public class CompareImageSharpSequential
     [Fact]
     public void Apply_GaussianBlur()
     {
-        double sigma = 1.5;
+        float sigma = 1.5f;
 
         using var input = ImageGenerator.Next();
 
         using var seqResult = Impl.Sequential.Apply(input, Filters.GaussianBlur(sigma));
-        using var sharpResult = input.Clone(ctx => ctx.GaussianBlur((float)sigma));
+        using var sharpResult = input.Clone(ctx => ctx.GaussianBlur(sigma));
 
         Assert.True(seqResult.IsEqualTo(sharpResult));
     }

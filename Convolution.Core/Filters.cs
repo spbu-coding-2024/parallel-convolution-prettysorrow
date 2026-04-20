@@ -8,51 +8,51 @@ namespace Convolution.Core;
 /// </summary>
 public static class Filters
 {
-    public static readonly Filter Identity = new(kernel: new double[,]
+    public static readonly Filter Identity = new(kernel: new float[,]
     {
         { 0, 0, 0 },
         { 0, 1, 0 },
         { 0, 0, 0 },
-    }, factor: 1.0, bias: 0.0);
+    }, factor: 1, bias: 0);
 
-    public static readonly Filter Edges = new(kernel: new double[,]
+    public static readonly Filter Edges = new(kernel: new float[,]
     {
-        { 0.0, 0.0, -1f, 0.0, 0.0 },
-        { 0.0, 0.0, -1f, 0.0, 0.0 },
-        { 0.0, 0.0,  2f, 0.0, 0.0 },
-        { 0.0, 0.0, 0.0, 0.0, 0.0 },
-        { 0.0, 0.0, 0.0, 0.0, 0.0 },
-    }, factor: 1.0, bias: 0.0);
+        { 0, 0, -1f, 0, 0 },
+        { 0, 0, -1f, 0, 0 },
+        { 0, 0,  2f, 0, 0 },
+        { 0, 0,   0, 0, 0 },
+        { 0, 0,   0, 0, 0 },
+    }, factor: 1, bias: 0);
 
-    public static readonly Filter Laplacian = new(kernel: new double[,]
+    public static readonly Filter Laplacian = new(kernel: new float[,]
     {
         {  0, -1,  0 },
         { -1,  4, -1 },
         {  0, -1,  0 },
-    }, factor: 1.0, bias: 0.0);
+    }, factor: 1, bias: 0);
 
-    public static readonly Filter SobelX = new(kernel: new double[,]
+    public static readonly Filter SobelX = new(kernel: new float[,]
     {
         { -1,  0,  1 },
         { -2,  0,  2 },
         { -1,  0,  1 },
-    }, factor: 1.0, bias: 128.0);
+    }, factor: 1, bias: 128);
 
-    public static readonly Filter SobelY = new(kernel: new double[,]
+    public static readonly Filter SobelY = new(kernel: new float[,]
     {
         { -1, -2, -1 },
         {  0,  0,  0 },
         {  1,  2,  1 },
-    }, factor: 1.0, bias: 128.0);
+    }, factor: 1, bias: 128);
 
-    public static readonly Filter PrewittX = new(kernel: new double[,]
+    public static readonly Filter PrewittX = new(kernel: new float[,]
     {
         { -1,  0,  1 },
         { -1,  0,  1 },
         { -1,  0,  1 },
-    }, factor: 1.0, bias: 128.0);
+    }, factor: 1, bias: 128);
 
-    public static readonly Filter PrewittY = new(kernel: new double[,]
+    public static readonly Filter PrewittY = new(kernel: new float[,]
     {
         { -1, -1, -1 },
         {  0,  0,  0 },
@@ -111,8 +111,8 @@ public static class Filters
         }
 
         int size = (2 * radius) + 1;
-        double weight = 1.0 / (size * size);
-        var kernel = new double[size, size];
+        float weight = 1.0f / (size * size);
+        var kernel = new float[size, size];
         for (int i = 0; i < size; i++)
         {
             for (int j = 0; j < size; j++)
@@ -124,7 +124,7 @@ public static class Filters
         return new Filter(kernel, factor: 1.0, bias: 0.0);
     }
 
-    public static Filter GaussianBlur(double sigma)
+    public static Filter GaussianBlur(float sigma)
     {
         if (sigma <= 0)
         {
@@ -133,15 +133,15 @@ public static class Filters
 
         int radius = (int)Math.Ceiling(3 * sigma);
         int size = (2 * radius) + 1;
-        var kernel = new double[size, size];
+        var kernel = new float[size, size];
         int offset = size / 2;
-        double sum = 0.0;
+        float sum = 0;
 
         for (int y = -offset; y <= offset; y++)
         {
             for (int x = -offset; x <= offset; x++)
             {
-                double value = Math.Exp(-((x * x) + (y * y)) / (2 * sigma * sigma));
+                float value = MathF.Exp(-((x * x) + (y * y)) / (2 * sigma * sigma));
                 kernel[y + offset, x + offset] = value;
                 sum += value;
             }
@@ -155,6 +155,6 @@ public static class Filters
             }
         }
 
-        return new Filter(kernel, factor: 1.0, bias: 0.0);
+        return new Filter(kernel, factor: 1, bias: 0);
     }
 }

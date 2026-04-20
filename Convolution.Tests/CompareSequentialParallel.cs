@@ -41,8 +41,8 @@ public class CompareSequentialParallel
     public void Apply_GaussianBlur()
     {
         using var input = ImageGenerator.Next();
-        var filter = Filters.GaussianBlur(sigma: 0.5);
-        RunSingle(input, filter);
+        var filter = Filters.GaussianBlur(sigma: 0.5f);
+        RunSingle(image, filter);
     }
 
     [Fact]
