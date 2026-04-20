@@ -6,16 +6,17 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Drawing;
 
+/// <summary>
+/// Generates random images.
+/// </summary>
 public class ImageGenerator(int? seed = null)
 {
     private readonly Random random = seed.HasValue ? new Random(seed.Value) : new Random();
 
-    private Color NextColor() => Color.FromRgb(
-        (byte)this.random.Next(256),
-        (byte)this.random.Next(256),
-        (byte)this.random.Next(256));
-
-    public Image<RgbaVector> Next(int width = 800, int height = 600, int shapeCount = 20)
+    /// <summary>
+    /// Generates a random image with specified number of random shapes.
+    /// </summary>
+    public Image<RgbaVector> Next(int width = 400, int height = 300, int shapeCount = 10)
     {
         var image = new Image<RgbaVector>(width, height);
         image.Mutate(ctx => ctx.BackgroundColor(this.NextColor()));

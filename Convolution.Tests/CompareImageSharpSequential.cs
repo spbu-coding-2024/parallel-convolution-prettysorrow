@@ -5,6 +5,9 @@ using Convolution.Extensions;
 using SixLabors.ImageSharp.Processing;
 using Xunit;
 
+/// <summary>
+/// Tests which compare sequential implementation and SixLabors' one.
+/// </summary>
 public class CompareImageSharpSequential
 {
     private static readonly ImageGenerator ImageGenerator = new();

@@ -6,6 +6,9 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
 
+/// <summary>
+/// Checks that the sequential and parallel implementations produce the same results.
+/// </summary>
 public class CompareSequentialParallel
 {
     private static readonly ImageGenerator ImageGenerator = new();

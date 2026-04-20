@@ -4,6 +4,9 @@ using Convolution.Core;
 using Convolution.Extensions;
 using Xunit;
 
+/// <summary>
+/// Tests for Convolution.Core.Filter.Compose.
+/// </summary>
 public class Compose
 {
     private static readonly ImageGenerator ImageGenerator = new();

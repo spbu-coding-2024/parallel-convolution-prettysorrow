@@ -1,9 +1,11 @@
 #pragma warning disable SA1025 // Code should not contain multiple whitespace in a row
+#pragma warning disable SA1600 // Elements should be documented
 
 namespace Convolution.Core;
 
-using static Filter;
-
+/// <summary>
+/// Collection of predefined convolution filters.
+/// </summary>
 public static class Filters
 {
     public static readonly Filter Identity = new(kernel: new double[,]

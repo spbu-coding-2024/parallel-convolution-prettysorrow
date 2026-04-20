@@ -1,9 +1,18 @@
 namespace Convolution.Core;
 
+/// <summary>
+/// Generates random convolution filters.
+/// </summary>
 public class FilterGenerator(int? seed = null)
 {
     private readonly Random random = seed.HasValue ? new Random(seed.Value) : new Random();
 
+    /// <summary>
+    /// Generates a random filter with the specified parameters.
+    /// </summary>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the size of <paramref name="kernel"/> is even (must be odd).
+    /// </exception>
     public Filter Next(
         int size = 5,
         double factor = 1.0,

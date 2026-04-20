@@ -4,6 +4,9 @@ using Convolution.Core;
 using Convolution.Extensions;
 using Xunit;
 
+/// <summary>
+/// Checks simple invariants that a sequential implementation must satisfy.
+/// </summary>
 public class Sequential
 {
     private static readonly ImageGenerator ImageGenerator = new();
