@@ -81,23 +81,11 @@ public sealed class Filter
             throw new ArgumentException("Filters edge handling mode must be the same.");
         }
 
-        int aSize = f1.Kernel.GetLength(0);
-        int bSize = f2.Kernel.GetLength(0);
+        int aSize = a.Kernel.GetLength(0);
+        int bSize = b.Kernel.GetLength(0);
         int cSize = aSize + bSize - 1;
-        int aOff = aSize / 2;
-        int bOff = bSize / 2;
-        int cOff = cSize / 2;
 
-        var kernel = new double[cSize, cSize];
-        double sumK2 = 0;
-
-        for (int by = 0; by < bSize; by++)
-        {
-            for (int bx = 0; bx < bSize; bx++)
-            {
-                sumK2 += f2.Kernel[by, bx];
-            }
-        }
+        var kernel = new float[cSize, cSize];
 
         for (int ay = 0; ay < aSize; ay++)
         {
@@ -107,17 +95,27 @@ public sealed class Filter
                 {
                     for (int bx = 0; bx < bSize; bx++)
                     {
-                        int ky = (ay - aOff) + (by - bOff) + cOff;
-                        int kx = (ax - aOff) + (bx - bOff) + cOff;
-                        kernel[ky, kx] += f1.Kernel[ay, ax] * f2.Kernel[by, bx];
+                        int cy = ay + by;
+                        int cx = ax + bx;
+                        kernel[cy, cx] += a.Kernel[ay, ax] * b.Kernel[by, bx];
                     }
                 }
             }
         }
 
-        double factor = f1.Factor * f2.Factor;
-        double bias = (f1.Bias * sumK2 * f2.Factor) + f2.Bias;
-        EdgeMode edgeMode = f1.edgeMode;
+        float bSum = 0;
+
+        for (int by = 0; by < bSize; by++)
+        {
+            for (int bx = 0; bx < bSize; bx++)
+            {
+                bSum += b.Kernel[by, bx];
+            }
+        }
+
+        float bias = (a.Bias * bSum * b.Factor) + b.Bias;
+        float factor = a.Factor * b.Factor;
+        EdgeMode edgeMode = a.EdgeMode;
 
         return new Filter(kernel, factor, bias, edgeMode);
     }
