@@ -12,10 +12,10 @@ using SixLabors.ImageSharp.PixelFormats;
 [Config(typeof(BenchmarkConfig))]
 public class RandomBenchmark
 {
-    [Params(512, 1024)]
+    [Params(128, 256)]
     public int ImageSize { get; set; }
 
-    [Params(3, 5, 21)]
+    [Params(5, 13)]
     public int FilterSize { get; set; }
 
     private readonly ImageGenerator imageGenerator = new(seed: 42);

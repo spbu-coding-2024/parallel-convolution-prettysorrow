@@ -16,7 +16,7 @@ public class ImageGenerator(int? seed = null)
     /// <summary>
     /// Generates a random image with specified number of random shapes.
     /// </summary>
-    public Image<RgbaVector> Next(int width = 400, int height = 300, int shapeCount = 10)
+    public Image<RgbaVector> Next(int width = 200, int height = 150, int shapeCount = 10)
     {
         var image = new Image<RgbaVector>(width, height);
         image.Mutate(ctx => ctx.BackgroundColor(this.NextColor()));
