@@ -1,100 +1,90 @@
 ﻿#pragma warning disable SA1200 // Using directives should be placed correctly
+#pragma warning disable SA1010 // Opening square brackets should be spaced correctly
+#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
 
 using System.CommandLine;
 using Convolution.Core;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-void SaveImage(Image<RgbaVector> image, string path)
+static Filter ParseFilter(string[]? filterArgs)
 {
-    string extension = Path.GetExtension(path).ToLowerInvariant();
-    switch (extension)
+    if (filterArgs is null || filterArgs.Length == 0)
     {
-        case ".jpg":
-        case ".jpeg":
-            image.SaveAsJpeg(path);
-            break;
-        case ".png":
-        default:
-            image.SaveAsPng(path);
-            break;
+        throw new ArgumentException("Filter name missing");
     }
-}
 
-void ApplyFilterAndSave(Image<RgbaVector> image, string outputPath, string filterName)
-{
-    Filter filter = filterName.ToLowerInvariant() switch
+    string name = filterArgs[0].ToLowerInvariant();
+    int? arg1 = filterArgs.Length > 1 ? int.Parse(filterArgs[1]) : null;
+
+    return name switch
     {
         "id" => Filters.Identity,
         "edges" => Filters.Edges,
-        "left" => Filters.ShiftLeft,
-        "right" => Filters.ShiftRight,
-        "top" => Filters.ShiftTop,
-        "bottom" => Filters.ShiftBottom,
-        _ => throw new ArgumentException($"unknown filter '{filterName}'")
+        "top" => arg1.HasValue ? Filters.ShiftTop(arg1.Value) : Filters.ShiftTop(),
+        "left" => arg1.HasValue ? Filters.ShiftLeft(arg1.Value) : Filters.ShiftLeft(),
+        "right" => arg1.HasValue ? Filters.ShiftRight(arg1.Value) : Filters.ShiftRight(),
+        "bottom" => arg1.HasValue ? Filters.ShiftBottom(arg1.Value) : Filters.ShiftBottom(),
+        _ => throw new ArgumentException($"unknown filter '{name}'")
     };
-
-    using var resultImage = Convolution.Impl.Parallel.Apply(image, filter);
-    SaveImage(resultImage, outputPath);
-    Console.WriteLine($"filter '{filterName}' has been applied. result is in {Path.GetFullPath(outputPath)}");
 }
 
-var generateOption = new Option<bool>("--generate")
+static void ApplyFilterAndSave(Image<RgbaVector> image, string outputPath, Filter filter)
 {
-    Description = "generate",
-    DefaultValueFactory = _ => false,
-};
+    using var result = Convolution.Impl.Parallel.Apply(image, filter);
 
-var widthOption = new Option<int>("--width")
-{
-    Description = "width of generated image",
-    DefaultValueFactory = _ => 800,
-};
+    switch (Path.GetExtension(outputPath).ToLowerInvariant())
+    {
+        case ".jpg":
+        case ".jpeg":
+            result.SaveAsJpeg(outputPath);
+            break;
+        case ".png":
+        default:
+            result.SaveAsPng(outputPath);
+            break;
+    }
 
-var heightOption = new Option<int>("--height")
-{
-    Description = "height of generated image",
-    DefaultValueFactory = _ => 600,
-};
-
-var seedOption = new Option<int?>("--seed")
-{
-    Description = "generating seed",
-};
-
-var countOption = new Option<int>("--count")
-{
-    Description = "amount of objects on generated image",
-    DefaultValueFactory = _ => 20,
-};
-
-var filterOption = new Option<string>("--filter")
-{
-    Description = "filter",
-    DefaultValueFactory = _ => "id",
-};
+    Console.WriteLine($"info: filter applied. result in {outputPath}");
+}
 
 var inputOption = new Option<string>("--input")
 {
-    Description = "input path",
+    Description = "Use specified image as input (is incompatible with --generate)",
 };
 
 var outputOption = new Option<string>("--output")
 {
-    Description = "output path",
+    Description = "Path of output file",
     DefaultValueFactory = _ => "output.png",
+};
+
+var generateOption = new Option<bool>("--generate")
+{
+    Description = "Use random generated image as input (is incompatible with --input)",
+    DefaultValueFactory = _ => false,
+};
+
+var seedOption = new Option<int?>("--seed")
+{
+    Description = "Generating seed",
+};
+
+var filterOption = new Option<string[]>("--filter")
+{
+    Description = "Filter's name and it's arguments. Examples: --filter edges, --filter left 10",
+    AllowMultipleArgumentsPerToken = true,
+    Arity = ArgumentArity.OneOrMore,
+    DefaultValueFactory = _ => ["id"],
 };
 
 var rootCommand = new RootCommand("driver")
 {
-    generateOption,
-    widthOption,
-    heightOption,
-    seedOption,
-    countOption,
-    filterOption,
     inputOption,
     outputOption,
+    generateOption,
+    seedOption,
+    filterOption,
 };
 
 rootCommand.SetAction(parseResult =>
