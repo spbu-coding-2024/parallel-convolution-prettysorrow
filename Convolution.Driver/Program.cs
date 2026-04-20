@@ -101,54 +101,26 @@ rootCommand.SetAction(parseResult =>
 {
     bool generate = parseResult.GetValue(generateOption);
     string? input = parseResult.GetValue(inputOption);
+    int? seed = parseResult.GetValue(seedOption);
 
-    if (generate && !string.IsNullOrEmpty(input))
+    var image = (generate, input) switch
     {
-        Console.Error.WriteLine("err: --generate and --input are incompatible");
-        Environment.ExitCode = 1;
-        return;
+        (true, null) => new ImageGenerator(seed).Next(),
+        (false, not null) => Image.Load<RgbaVector>(input),
+        (false, null) => throw new Exception("specify --generate or --input"),
+        (true, not null) => throw new Exception("--generate and --input are incompatible")
+    };
+
+    string? output = parseResult.GetValue(outputOption);
+
+    if (string.IsNullOrWhiteSpace(output))
+    {
+        throw new Exception("specify --output");
     }
 
-    if (!generate && string.IsNullOrEmpty(input))
-    {
-        Console.Error.WriteLine("err: specify --generate or --input");
-        Environment.ExitCode = 1;
-        return;
-    }
+    Filter filter = ParseFilter(parseResult.GetValue(filterOption));
 
-    string output = parseResult.GetValue(outputOption)!;
-    string filterName = parseResult.GetValue(filterOption)!;
-
-    try
-    {
-        if (generate)
-        {
-            int width = parseResult.GetValue(widthOption);
-            int height = parseResult.GetValue(heightOption);
-            int? seed = parseResult.GetValue(seedOption);
-            int shapeCount = parseResult.GetValue(countOption);
-
-            using var image = new ImageGenerator(seed).Next(width, height, shapeCount);
-            ApplyFilterAndSave(image, output, filterName);
-        }
-        else
-        {
-            if (!File.Exists(input))
-            {
-                Console.Error.WriteLine($"err: not found: '{input}'");
-                Environment.ExitCode = 1;
-                return;
-            }
-
-            using var inputImage = Image.Load<RgbaVector>(input);
-            ApplyFilterAndSave(inputImage, output, filterName);
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.Error.WriteLine($"err: exception: {ex.Message}");
-        Environment.ExitCode = 1;
-    }
+    ApplyFilterAndSave(image, output, filter);
 });
 
 return rootCommand.Parse(args).Invoke();
