@@ -28,6 +28,12 @@ public class ImageGenerator(int? seed = null)
         return image;
     }
 
+    private Color NextColor()
+        => Color.FromRgb(
+            (byte)this.random.Next(256),
+            (byte)this.random.Next(256),
+            (byte)this.random.Next(256));
+
     private void DrawRandomShape(Image<RgbaVector> image)
     {
         var color = this.NextColor();

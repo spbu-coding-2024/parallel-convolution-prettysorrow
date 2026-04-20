@@ -129,7 +129,7 @@ public static class Filters
             }
         }
 
-        return new Filter(kernel, factor: 1.0, bias: 0.0);
+        return new Filter(kernel, factor: 1, bias: 0);
     }
 
     /// <exception cref="ArgumentOutOfRangeException">
@@ -137,10 +137,7 @@ public static class Filters
     /// </exception>
     public static Filter GaussianBlur(float sigma)
     {
-        if (sigma <= 0)
-        {
-            throw new ArgumentException("Sigma must be positive", nameof(sigma));
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(sigma, 0, nameof(sigma));
 
         int radius = (int)Math.Ceiling(3 * sigma);
         int size = (2 * radius) + 1;
