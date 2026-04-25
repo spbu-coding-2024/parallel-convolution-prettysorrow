@@ -8,6 +8,13 @@ namespace Convolution.Core;
 /// </summary>
 public static class Filters
 {
+    public static readonly Filter Zeros = new(kernel: new float[,]
+    {
+            { 0, 0, 0 },
+            { 0, 0, 0 },
+            { 0, 0, 0 },
+    }, factor: 1, bias: 0);
+
     public static readonly Filter Identity = new(kernel: new float[,]
     {
         { 0, 0, 0 },
