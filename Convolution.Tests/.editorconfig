@@ -5,3 +5,6 @@ dotnet_diagnostic.SA1600.severity = none
 
 # SA1202: Elements should be ordered by access
 dotnet_diagnostic.SA1202.severity = none
+
+# xUnit1015: MemberData must reference an existing member
+dotnet_diagnostic.xUnit1015.severity = none
