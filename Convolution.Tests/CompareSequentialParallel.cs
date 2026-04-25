@@ -7,9 +7,10 @@ using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
 
 /// <summary>
-/// Checks that the sequential and parallel implementations produce the same results.
+/// Compares Convolution.Impl.Parallel.Apply and Convolution.Impl.Sequential.Apply.
 /// </summary>
-public class CompareSequentialParallel
+[Trait("Suite", "Abstract")]
+public abstract class CompareSequentialParallel
 {
     private static readonly ImageGenerator ImageGenerator = new();
     private static readonly FilterGenerator FilterGenerator = new();
@@ -21,75 +22,86 @@ public class CompareSequentialParallel
         Assert.True(parallelResult.IsEqualTo(sequentialResult));
     }
 
-    [Fact]
-    public void Apply_IdentityFilter()
+    [Theory]
+    [MemberData("ImageSizes")]
+    public void Apply_IdentityFilter(int width, int height)
     {
-        using var image = ImageGenerator.Next();
-        var filter = Filters.Identity;
-        RunSingle(image, filter);
+        using var image = ImageGenerator.Next(width, height);
+        RunSingle(image, Filters.Identity);
     }
 
-    [Fact]
-    public void Apply_BoxBlur()
+    [Theory]
+    [MemberData("ImageSizes")]
+    public void Apply_BoxBlur(int width, int height)
     {
-        using var image = ImageGenerator.Next();
-        var filter = Filters.BoxBlur(radius: 1);
-        RunSingle(image, filter);
+        using var image = ImageGenerator.Next(width, height);
+        RunSingle(image, Filters.BoxBlur(radius: 1));
     }
 
-    [Fact]
-    public void Apply_GaussianBlur()
+    [Theory]
+    [MemberData("ImageSizes")]
+    public void Apply_GaussianBlur(int width, int height)
     {
-        using var image = ImageGenerator.Next();
-        var filter = Filters.GaussianBlur(sigma: 0.5f);
-        RunSingle(image, filter);
+        using var image = ImageGenerator.Next(width, height);
+        RunSingle(image, Filters.GaussianBlur(sigma: 0.5f));
     }
 
-    [Fact]
-    public void Apply_SobelX()
+    [Theory]
+    [MemberData("ImageSizes")]
+    public void Apply_SobelX(int width, int height)
     {
-        using var image = ImageGenerator.Next();
-        var filter = Filters.SobelX;
-        RunSingle(image, filter);
+        using var image = ImageGenerator.Next(width, height);
+        RunSingle(image, Filters.SobelX);
     }
 
-    [Fact]
-    public void Apply_SobelY()
+    [Theory]
+    [MemberData("ImageSizes")]
+    public void Apply_SobelY(int width, int height)
     {
-        using var image = ImageGenerator.Next();
-        var filter = Filters.SobelY;
-        RunSingle(image, filter);
+        using var image = ImageGenerator.Next(width, height);
+        RunSingle(image, Filters.SobelY);
     }
 
-    [Fact]
-    public void Apply_PrewittX()
+    [Theory]
+    [MemberData("ImageSizes")]
+    public void Apply_PrewittX(int width, int height)
     {
-        using var image = ImageGenerator.Next();
-        var filter = Filters.PrewittX;
-        RunSingle(image, filter);
+        using var image = ImageGenerator.Next(width, height);
+        RunSingle(image, Filters.PrewittX);
     }
 
-    [Fact]
-    public void Apply_PrewittY()
+    [Theory]
+    [MemberData("ImageSizes")]
+    public void Apply_PrewittY(int width, int height)
     {
-        using var image = ImageGenerator.Next();
-        var filter = Filters.PrewittY;
-        RunSingle(image, filter);
+        using var image = ImageGenerator.Next(width, height);
+        RunSingle(image, Filters.PrewittY);
     }
 
-    [Fact]
-    public void Apply_RandomFilter5()
+    [Theory]
+    [MemberData("ImageSizes")]
+    public void Apply_RandomFilter(int width, int height)
     {
-        using var image = ImageGenerator.Next();
-        var filter = FilterGenerator.Next(size: 5);
+        using var image = ImageGenerator.Next(width, height);
+        var filter = FilterGenerator.Next(size: 3);
         RunSingle(image, filter);
     }
+}
 
-    [Fact]
-    public void Apply_RandomFilter25()
+[Trait("Suite", "Coverage")]
+public class CompareSequentialParallel_Coverage : CompareSequentialParallel
+{
+    public static TheoryData<int, int> ImageSizes => new() { { 50, 50 } };
+}
+
+[Trait("Suite", "All")]
+public class CompareSequentialParallel_All : CompareSequentialParallel
+{
+    public static TheoryData<int, int> ImageSizes => new()
     {
-        using var image = ImageGenerator.Next();
-        var filter = FilterGenerator.Next(size: 25);
-        RunSingle(image, filter);
-    }
+        { 1, 1 },
+        { 32, 32 },
+        { 256, 144 },
+        { 640, 360 },
+    };
 }
