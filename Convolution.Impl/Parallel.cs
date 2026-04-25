@@ -22,14 +22,21 @@ public static class Parallel
     public static Image<RgbaVector> ApplyRows(Image<RgbaVector> source, Filter filter)
     {
         Image<RgbaVector> result = new(source.Width, source.Height);
+
         int batchSize = Math.Max(1, source.Height / Environment.ProcessorCount);
-        int batchesAmount = (source.Height + batchSize - 1) / batchSize; // ceiled (source.Height / batchSize)
+        int batchesAmount = (source.Height + batchSize - 1) / batchSize;
+
         System.Threading.Tasks.Parallel.For(0, batchesAmount, batchIndex =>
         {
             int startY = batchIndex * batchSize;
             int endY = Math.Min(startY + batchSize, source.Height);
-            ApplyOneTile(source, result, filter, startY, endY, 0, source.Width);
+
+            int startX = 0;
+            int endX = source.Width;
+
+            ApplyOneTile(source, result, filter, startY, endY, startX, endX);
         });
+
         return result;
     }
 
@@ -39,14 +46,21 @@ public static class Parallel
     public static Image<RgbaVector> ApplyColumns(Image<RgbaVector> source, Filter filter)
     {
         Image<RgbaVector> result = new(source.Width, source.Height);
+
         int batchSize = Math.Max(1, source.Width / Environment.ProcessorCount);
-        int batchesAmount = (source.Width + batchSize - 1) / batchSize; // ceiled (source.Width / batchSize)
+        int batchesAmount = (source.Width + batchSize - 1) / batchSize;
+
         System.Threading.Tasks.Parallel.For(0, batchesAmount, batchIndex =>
         {
+            int startY = 0;
+            int endY = source.Height;
+
             int startX = batchIndex * batchSize;
             int endX = Math.Min(startX + batchSize, source.Width);
-            ApplyOneTile(source, result, filter, 0, source.Height, startX, endX);
+
+            ApplyOneTile(source, result, filter, startY, endY, startX, endX);
         });
+
         return result;
     }
 
@@ -58,19 +72,22 @@ public static class Parallel
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(tileSize);
 
         Image<RgbaVector> result = new(source.Width, source.Height);
-        int tileSize_ = EstimateOptimalTileSize(source.Width, source.Height); // TODO: weird
-        int tilesAcross = (source.Width + tileSize_ - 1) / tileSize_; // ceiled (source.Width / tileSize_)
-        int tilesDown = (source.Height + tileSize_ - 1) / tileSize_;  // ceiled (source.Height / tileSize_)
-        int totalTiles = tilesAcross * tilesDown;
-        System.Threading.Tasks.Parallel.For(0, totalTiles, tileIndex =>
+
+        int tilesAcross = (source.Width + tileSize - 1) / tileSize;
+        int tilesDown = (source.Height + tileSize - 1) / tileSize;
+        int tilesTotal = tilesAcross * tilesDown;
+
+        // left-to-right-top-to-bottom tiles traverse order
+        System.Threading.Tasks.Parallel.For(0, tilesTotal, tileIndex =>
         {
-            // left-to-right-top-to-bottom tiles traverse order
             int tileRow = tileIndex / tilesAcross;
+            int startY = tileRow * tileSize;
+            int endY = Math.Min(startY + tileSize, source.Height);
+
             int tileColumn = tileIndex % tilesAcross;
-            int startX = tileColumn * tileSize_;
-            int endX = Math.Min(startX + tileSize_, source.Width);
-            int startY = tileRow * tileSize_;
-            int endY = Math.Min(startY + tileSize_, source.Height);
+            int startX = tileColumn * tileSize;
+            int endX = Math.Min(startX + tileSize, source.Width);
+
             ApplyOneTile(source, result, filter, startY, endY, startX, endX);
         });
 
@@ -90,7 +107,7 @@ public static class Parallel
     {
         int totalPixels = width * height;
         int pixelsPerTile = totalPixels / Environment.ProcessorCount;
-        return (int)Math.Max(16, Math.Sqrt(pixelsPerTile)); // TODO: is 16 OK?
+        return (int)Math.Max(16, Math.Sqrt(pixelsPerTile));
     }
 
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
