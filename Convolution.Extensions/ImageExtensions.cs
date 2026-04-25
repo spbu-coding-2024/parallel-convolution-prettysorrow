@@ -57,6 +57,7 @@ public static class ImageExtensions
     /// <summary>
     /// Evaluates a single pixel using convolution.
     /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static RgbaVector FilterOnePixel(this Image<RgbaVector> source, Filter filter, int x, int y)
     {
         static int Wrap(int n, int bound) => ((n % bound) + bound) % bound;
