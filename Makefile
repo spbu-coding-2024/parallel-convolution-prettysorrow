@@ -16,7 +16,7 @@ clean:
 
 .PHONY: test
 test:
-	dotnet test
+	dotnet test $(REPO_ROOT)/Convolution.Tests/Convolution.Tests.csproj --filter "Suite=All"
 
 benchmark:
 	dotnet run -c Release --project $(REPO_ROOT)/Convolution.Measurement
@@ -37,6 +37,7 @@ restore:
 
 coverage: restore
 	dotnet test $(REPO_ROOT)/Convolution.Tests/Convolution.Tests.csproj \
+		--filter "Suite=Coverage" \
 		/p:CollectCoverage=true \
 		/p:Include="[$(REPO_ROOT)/Convolution.*]*" \
 		/p:Exclude="[$(REPO_ROOT)/Convolution.Tests]*" \
