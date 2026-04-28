@@ -74,12 +74,10 @@ jobs:
 
       - name: Prepare deploy
         run: |
-          find coverage-artifact -type f
-          find benchmark-artifact -type f
           mkdir public
-          cp Artifacts/index.html                                                              public/
-          cp coverage-artifact/Artifacts/Coverage/coverage-summary.txt                         public/
-          cp benchmark-artifact/Convolution.Measurement.RandomBenchmark-report.png             public/
+          cp Artifacts/index.html                                                        public/
+          cp coverage-artifact/coverage-summary.txt                                      public/
+          cp benchmark-artifact/Convolution.Measurement.RandomBenchmark-report.png       public/
 
       - uses: peaceiris/actions-gh-pages@v3
         with:
