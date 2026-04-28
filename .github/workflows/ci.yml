@@ -53,34 +53,34 @@ jobs:
           name: benchmark-results
           path: Artifacts/RandomBenchmark/
 
-deploy-pages:
-  name: Deploy to GitHub Pages
-  runs-on: ubuntu-latest
-  needs: [coverage, benchmark]
-  permissions:
-    contents: write
-  steps:
-    - uses: actions/checkout@v4
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: [coverage, benchmark]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
 
-    - uses: actions/download-artifact@v4
-      with:
-        name: coverage-report
-        path: coverage-artifact
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-artifact
 
-    - uses: actions/download-artifact@v4
-      with:
-        name: benchmark-results
-        path: benchmark-artifact
+      - uses: actions/download-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmark-artifact
 
-    - name: Prepare deploy
-      run: |
-        mkdir public
-        cp Artifacts/index.html                                                               public/
-        cp coverage-artifact/Artifacts/Coverage/coverage-summary.txt                         public/
-        cp benchmark-artifact/Convolution.Measurement.RandomBenchmark-report.png             public/
+      - name: Prepare deploy
+        run: |
+          mkdir public
+          cp Artifacts/index.html                                                               public/
+          cp coverage-artifact/Artifacts/Coverage/coverage-summary.txt                         public/
+          cp benchmark-artifact/Convolution.Measurement.RandomBenchmark-report.png             public/
 
-    - uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./public
-        keep_files: false
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          keep_files: false
