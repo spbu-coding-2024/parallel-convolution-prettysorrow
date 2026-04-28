@@ -12,7 +12,8 @@ deps-brew:
 
 clean:
 	dotnet clean
-	rm -rf $(REPO_ROOT)/Artifacts/*
+	rm -rf $(REPO_ROOT)/Artifacts/Coverage
+	rm -rf $(REPO_ROOT)/Artifacts/RandomBenchmark
 
 .PHONY: test
 test:
