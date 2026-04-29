@@ -1,7 +1,6 @@
 namespace Convolution.Tests;
 
 using Convolution.Core;
-using Convolution.Extensions;
 using Xunit;
 
 [Trait("Suite", "Abstract")]
@@ -17,10 +16,10 @@ public abstract class InvariantTests
         using var image1 = ImageGenerator.Next(width, height);
         using var image2 = ImageGenerator.Next(width, height);
 
-        using var seqResultImage1 = Impl.Sequential.Apply(image1, Filters.Zeros);
-        using var seqResultImage2 = Impl.Sequential.Apply(image2, Filters.Zeros);
-        using var parResultImage1 = Impl.Parallel.Apply(image1, Filters.Zeros);
-        using var parResultImage2 = Impl.Parallel.Apply(image2, Filters.Zeros);
+        using var seqResultImage1 = Impl.Sequential.Apply(Filters.Zeros, image1);
+        using var seqResultImage2 = Impl.Sequential.Apply(Filters.Zeros, image2);
+        using var parResultImage1 = Impl.Parallel.Apply(Filters.Zeros, image1);
+        using var parResultImage2 = Impl.Parallel.Apply(Filters.Zeros, image2);
 
         Assert.True(seqResultImage1.IsEqualTo(seqResultImage2));
         Assert.True(parResultImage1.IsEqualTo(parResultImage2));
@@ -33,8 +32,8 @@ public abstract class InvariantTests
     {
         using var image = ImageGenerator.Next(width, height);
 
-        using var seqResult = Impl.Sequential.Apply(image, Filters.Identity);
-        using var parResult = Impl.Parallel.Apply(image, Filters.Identity);
+        using var seqResult = Impl.Sequential.Apply(Filters.Identity, image);
+        using var parResult = Impl.Parallel.Apply(Filters.Identity, image);
 
         Assert.True(image.IsEqualTo(seqResult));
         Assert.True(image.IsEqualTo(parResult));
@@ -47,8 +46,8 @@ public abstract class InvariantTests
         using var image = ImageGenerator.Next(width, height);
         var filter = FilterGenerator.Next();
 
-        using var seqResult = Impl.Sequential.Apply(image, filter);
-        using var parResult = Impl.Parallel.Apply(image, filter);
+        using var seqResult = Impl.Sequential.Apply(filter, image);
+        using var parResult = Impl.Parallel.Apply(filter, image);
 
         Assert.Equal(image.Width, seqResult.Width);
         Assert.Equal(image.Height, seqResult.Height);
@@ -70,13 +69,13 @@ public abstract class InvariantTests
         var paddedFilter1 = defaultFilter.Pad(1);
         var paddedFilter5 = defaultFilter.Pad(5);
 
-        using var seqResultDefault = Impl.Sequential.Apply(image, defaultFilter);
-        using var seqResultPad1 = Impl.Sequential.Apply(image, paddedFilter1);
-        using var seqResultPad5 = Impl.Sequential.Apply(image, paddedFilter5);
+        using var seqResultDefault = Impl.Sequential.Apply(defaultFilter, image);
+        using var seqResultPad1 = Impl.Sequential.Apply(paddedFilter1, image);
+        using var seqResultPad5 = Impl.Sequential.Apply(paddedFilter5, image);
 
-        using var parResultDefault = Impl.Parallel.Apply(image, defaultFilter);
-        using var parResultPad1 = Impl.Parallel.Apply(image, paddedFilter1);
-        using var parResultPad5 = Impl.Parallel.Apply(image, paddedFilter5);
+        using var parResultDefault = Impl.Parallel.Apply(defaultFilter, image);
+        using var parResultPad1 = Impl.Parallel.Apply(paddedFilter1, image);
+        using var parResultPad5 = Impl.Parallel.Apply(paddedFilter5, image);
 
         Assert.True(seqResultDefault.IsEqualTo(seqResultPad1));
         Assert.True(seqResultPad1.IsEqualTo(seqResultPad5));

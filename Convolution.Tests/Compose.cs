@@ -1,9 +1,12 @@
 namespace Convolution.Tests;
 
 using Convolution.Core;
-using Convolution.Extensions;
+using static Convolution.Impl.Parallel;
 using Xunit;
 
+/// <summary>
+/// Tests Convolution.Core.Filter.Compose using parallel implementation.
+/// </summary>
 [Trait("Suite", "Abstract")]
 public abstract class ComposeTests
 {
@@ -15,8 +18,8 @@ public abstract class ComposeTests
     public void Compose_Identity(int width, int height)
     {
         using var image = ImageGenerator.Next(width, height);
-        var filter = Filter.Compose(Filters.Identity, Filters.Identity);
-        using var output = Impl.Parallel.Apply(image, filter);
+        var filter = Filters.Identity.Compose(Filters.Identity);
+        using var output = filter.Apply(image);
         Assert.True(output.IsEqualTo(image));
     }
 
@@ -28,11 +31,11 @@ public abstract class ComposeTests
         var filter1 = FilterGenerator.Next(size: 3, edgeMode: EdgeMode.Wrap);
         var filter2 = FilterGenerator.Next(size: 3, edgeMode: EdgeMode.Wrap);
 
-        var composition1 = Filter.Compose(filter1, filter2);
-        var composition2 = Filter.Compose(filter2, filter1);
+        var composition1 = filter1.Compose(filter2);
+        var composition2 = filter2.Compose(filter1);
 
-        using var output1 = Impl.Parallel.Apply(image, composition1);
-        using var output2 = Impl.Parallel.Apply(image, composition2);
+        using var output1 = composition1.Apply(image);
+        using var output2 = composition2.Apply(image);
 
         Assert.True(output1.IsEqualTo(output2));
     }
@@ -45,11 +48,11 @@ public abstract class ComposeTests
         var filter1 = FilterGenerator.Next(size: 3, edgeMode: EdgeMode.Clamp);
         var filter2 = FilterGenerator.Next(size: 3, edgeMode: EdgeMode.Clamp);
 
-        var composition1 = Filter.Compose(filter1, filter2);
-        var composition2 = Filter.Compose(filter2, filter1);
+        var composition1 = filter1.Compose(filter2);
+        var composition2 = filter2.Compose(filter1);
 
-        using var output1 = Impl.Parallel.Apply(image, composition1);
-        using var output2 = Impl.Parallel.Apply(image, composition2);
+        using var output1 = composition1.Apply(image);
+        using var output2 = composition2.Apply(image);
 
         Assert.True(output1.IsEqualTo(output2));
     }
@@ -62,9 +65,9 @@ public abstract class ComposeTests
         var filter1 = FilterGenerator.Next(size: 3, edgeMode: EdgeMode.Wrap);
         var filter2 = FilterGenerator.Next(size: 3, edgeMode: EdgeMode.Wrap);
 
-        var composition = Filter.Compose(filter1, filter2);
-        using var output1 = Impl.Parallel.Apply(Impl.Parallel.Apply(image, filter1), filter2);
-        using var output2 = Impl.Parallel.Apply(image, composition);
+        var composition = filter1.Compose(filter2);
+        using var output1 = filter2.Apply(filter1.Apply(image));
+        using var output2 = composition.Apply(image);
 
         Assert.True(output1.IsEqualTo(output2));
     }
@@ -75,8 +78,8 @@ public abstract class ComposeTests
     {
         using var image = ImageGenerator.Next(width, height);
 
-        using var leftRightResult = Impl.Parallel.Apply(image, Filter.Compose(Filters.ShiftLeft(5), Filters.ShiftRight(5)));
-        using var rightLeftResult = Impl.Parallel.Apply(image, Filter.Compose(Filters.ShiftRight(5), Filters.ShiftLeft(5)));
+        using var leftRightResult = image.Filter(Filters.ShiftLeft(5).Compose(Filters.ShiftRight(5)));
+        using var rightLeftResult = image.Filter(Filters.ShiftRight(5).Compose(Filters.ShiftLeft(5)));
 
         Assert.True(leftRightResult.IsEqualTo(image));
         Assert.True(rightLeftResult.IsEqualTo(image));
@@ -87,8 +90,8 @@ public abstract class ComposeTests
     public void Compose_Shift_TopBottom(int width, int height)
     {
         using var image = ImageGenerator.Next(width, height);
-        using var topBottom = Impl.Parallel.Apply(image, Filter.Compose(Filters.ShiftTop(5), Filters.ShiftBottom(5)));
-        using var bottomTop = Impl.Parallel.Apply(image, Filter.Compose(Filters.ShiftBottom(5), Filters.ShiftTop(5)));
+        using var topBottom = image.Filter(Filters.ShiftTop(5).Compose(Filters.ShiftBottom(5)));
+        using var bottomTop = image.Filter(Filters.ShiftBottom(5).Compose(Filters.ShiftTop(5)));
         Assert.True(topBottom.IsEqualTo(image));
         Assert.True(bottomTop.IsEqualTo(image));
     }
@@ -98,13 +101,13 @@ public abstract class ComposeTests
     public void Compose_Shift_LeftLeftRight(int width, int height)
     {
         using var image = ImageGenerator.Next(width, height);
-        var llrFilter = Filter.Compose(Filter.Compose(Filters.ShiftLeft(5), Filters.ShiftLeft(5)), Filters.ShiftRight(5));
-        var lrlFilter = Filter.Compose(Filter.Compose(Filters.ShiftLeft(5), Filters.ShiftRight(5)), Filters.ShiftLeft(5));
-        var rllFilter = Filter.Compose(Filter.Compose(Filters.ShiftRight(5), Filters.ShiftLeft(5)), Filters.ShiftLeft(5));
+        var llrFilter = Filters.ShiftLeft(5).Compose(Filters.ShiftLeft(5)).Compose(Filters.ShiftRight(5));
+        var lrlFilter = Filters.ShiftLeft(5).Compose(Filters.ShiftRight(5)).Compose(Filters.ShiftLeft(5));
+        var rllFilter = Filters.ShiftRight(5).Compose(Filters.ShiftLeft(5)).Compose(Filters.ShiftLeft(5));
 
-        using var llrResult = Impl.Parallel.Apply(image, llrFilter);
-        using var lrlResult = Impl.Parallel.Apply(image, lrlFilter);
-        using var rllResult = Impl.Parallel.Apply(image, rllFilter);
+        using var llrResult = llrFilter.Apply(image);
+        using var lrlResult = lrlFilter.Apply(image);
+        using var rllResult = rllFilter.Apply(image);
 
         Assert.True(llrResult.IsEqualTo(lrlResult));
         Assert.True(lrlResult.IsEqualTo(rllResult));
@@ -116,10 +119,11 @@ public abstract class ComposeTests
     {
         using var image = ImageGenerator.Next(width, height);
 
-        using var applyComposeTopRight = Impl.Parallel.Apply(image, Filter.Compose(Filters.ShiftTop(10), Filters.ShiftRight(10)));
-        using var applyComposeRightTop = Impl.Parallel.Apply(image, Filter.Compose(Filters.ShiftRight(10), Filters.ShiftTop(10)));
-        using var applyApplyTopRight = Impl.Parallel.Apply(Impl.Parallel.Apply(image, Filters.ShiftTop(10)), Filters.ShiftRight(10));
-        using var applyApplyRightTop = Impl.Parallel.Apply(Impl.Parallel.Apply(image, Filters.ShiftRight(10)), Filters.ShiftTop(10));
+        using var applyComposeTopRight = image.Filter(Filters.ShiftTop(10).Compose(Filters.ShiftRight(10)));
+        using var applyComposeRightTop = image.Filter(Filters.ShiftRight(10).Compose(Filters.ShiftTop(10)));
+
+        using var applyApplyTopRight = image.Filter(Filters.ShiftTop(10)).Filter(Filters.ShiftRight(10));
+        using var applyApplyRightTop = image.Filter(Filters.ShiftRight(10)).Filter(Filters.ShiftTop(10));
 
         Assert.True(applyComposeTopRight.IsEqualTo(applyComposeRightTop));
         Assert.True(applyComposeRightTop.IsEqualTo(applyApplyTopRight));

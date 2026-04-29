@@ -1,7 +1,6 @@
 namespace Convolution.Tests;
 
 using Convolution.Core;
-using Convolution.Extensions;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
@@ -17,8 +16,8 @@ public abstract class CompareSequentialParallel
 
     private static void RunSingle(Image<RgbaVector> image, Filter filter)
     {
-        using var parallelResult = Impl.Parallel.Apply(image, filter);
-        using var sequentialResult = Impl.Sequential.Apply(image, filter);
+        using var parallelResult = Impl.Parallel.Apply(filter, image);
+        using var sequentialResult = Impl.Sequential.Apply(filter, image);
         Assert.True(parallelResult.IsEqualTo(sequentialResult));
     }
 

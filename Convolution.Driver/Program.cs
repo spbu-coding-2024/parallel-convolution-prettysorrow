@@ -31,7 +31,7 @@ static Filter ParseFilter(string[]? filterArgs)
 
 static void ApplyFilterAndSave(Image<RgbaVector> image, string outputPath, Filter filter)
 {
-    using var result = Convolution.Impl.Parallel.Apply(image, filter);
+    using var result = Convolution.Impl.Parallel.Apply(filter, image);
 
     switch (Path.GetExtension(outputPath).ToLowerInvariant())
     {

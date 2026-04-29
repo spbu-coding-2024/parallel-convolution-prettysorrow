@@ -1,5 +1,3 @@
-#pragma warning disable SA1600 // Elements should be documented
-
 namespace Convolution.Measurement;
 
 using BenchmarkDotNet.Attributes;
@@ -8,7 +6,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 /// <summary>
-/// Benchmark which runs on random generated images and compares different implementations.
+/// Benchmark which runs on random generated images and compares different convolution implementations.
 /// </summary>
 [MemoryDiagnoser]
 [MarkdownExporter]
@@ -41,21 +39,21 @@ public class RandomBenchmark
 
     [Benchmark(Baseline = true)]
     public Image<RgbaVector> Sequential()
-        => Impl.Sequential.Apply(this.sourceImage, this.filter);
+        => Impl.Sequential.Apply(this.filter, this.sourceImage);
 
     [Benchmark]
     public Image<RgbaVector> Parallel_Rows()
-        => Impl.Parallel.ApplyRows(this.sourceImage, this.filter);
+        => Impl.Parallel.ApplyRows(this.filter, this.sourceImage);
 
     [Benchmark]
     public Image<RgbaVector> Parallel_Columns()
-        => Impl.Parallel.ApplyColumns(this.sourceImage, this.filter);
+        => Impl.Parallel.ApplyColumns(this.filter, this.sourceImage);
 
     [Benchmark]
     public Image<RgbaVector> Parallel_Tiles_Size8()
-        => Impl.Parallel.ApplyTiles(this.sourceImage, this.filter, tileSize: 8);
+        => Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 8);
 
     [Benchmark]
     public Image<RgbaVector> Parallel_Tiles_Size128()
-   => Impl.Parallel.ApplyTiles(this.sourceImage, this.filter, tileSize: 128);
+   => Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 128);
 }

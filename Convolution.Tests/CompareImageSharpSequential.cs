@@ -1,7 +1,6 @@
 namespace Convolution.Tests;
 
 using Convolution.Core;
-using Convolution.Extensions;
 using SixLabors.ImageSharp.Processing;
 using Xunit;
 
@@ -19,7 +18,7 @@ public abstract class CompareImageSharpSequentialTests
     {
         int radius = 1;
         using var input = ImageGenerator.Next(width, height);
-        using var seqResult = Impl.Sequential.Apply(input, Filters.BoxBlur(radius));
+        using var seqResult = Impl.Sequential.Apply(Filters.BoxBlur(radius), input);
         using var sharpResult = input.Clone(ctx => ctx.BoxBlur(radius));
         Assert.True(seqResult.IsEqualTo(sharpResult));
     }
@@ -30,7 +29,7 @@ public abstract class CompareImageSharpSequentialTests
     {
         float sigma = 1.5f;
         using var input = ImageGenerator.Next(width, height);
-        using var seqResult = Impl.Sequential.Apply(input, Filters.GaussianBlur(sigma));
+        using var seqResult = Impl.Sequential.Apply(Filters.GaussianBlur(sigma), input);
         using var sharpResult = input.Clone(ctx => ctx.GaussianBlur(sigma));
         Assert.True(seqResult.IsEqualTo(sharpResult));
     }

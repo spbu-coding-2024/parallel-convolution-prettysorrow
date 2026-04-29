@@ -43,8 +43,8 @@ public class EdgeCases
         var clampFilter = new Filter(kernel, edgeMode: EdgeMode.Clamp);
         var wrapFilter = new Filter(kernel, edgeMode: EdgeMode.Wrap);
 
-        Assert.Throws<ArgumentException>(() => Filter.Compose(clampFilter, wrapFilter));
-        Assert.Throws<ArgumentException>(() => Filter.Compose(wrapFilter, clampFilter));
+        Assert.Throws<ArgumentException>(() => clampFilter.Compose(wrapFilter));
+        Assert.Throws<ArgumentException>(() => wrapFilter.Compose(clampFilter));
     }
 
     [Fact]
@@ -57,8 +57,8 @@ public class EdgeCases
         var wrapFilter3x3 = new Filter(kernel3x3, edgeMode: EdgeMode.Wrap);
         var wrapFilter5x5 = new Filter(kernel5x5, edgeMode: EdgeMode.Wrap);
 
-        var composedClamp = Filter.Compose(clampFilter5x5, clampFilter3x3);
-        var composedWrap = Filter.Compose(wrapFilter3x3, wrapFilter5x5);
+        var composedClamp = clampFilter5x5.Compose(clampFilter3x3);
+        var composedWrap = wrapFilter3x3.Compose(wrapFilter5x5);
 
         Assert.NotNull(composedClamp);
         Assert.NotNull(composedWrap);

@@ -1,7 +1,7 @@
 namespace Convolution.Tests;
 
 using Convolution.Core;
-using Convolution.Extensions;
+using Convolution.Impl;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
@@ -17,9 +17,9 @@ public abstract class CompareParallelOrdersTests
 
     private static void AssertAllOrdersEqual(Image<RgbaVector> image, Filter filter)
     {
-        using var rowsResult = Impl.Parallel.ApplyRows(image, filter);
-        using var columnsResult = Impl.Parallel.ApplyColumns(image, filter);
-        using var tilesResult = Impl.Parallel.ApplyTiles(image, filter);
+        using var rowsResult = filter.ApplyRows(image);
+        using var columnsResult = filter.ApplyColumns(image);
+        using var tilesResult = filter.ApplyTiles(image);
 
         Assert.True(rowsResult.IsEqualTo(columnsResult));
         Assert.True(columnsResult.IsEqualTo(tilesResult));
