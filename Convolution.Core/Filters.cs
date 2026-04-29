@@ -1,5 +1,4 @@
 #pragma warning disable SA1025 // Code should not contain multiple whitespace in a row
-#pragma warning disable SA1600 // Elements should be documented
 
 namespace Convolution.Core;
 
@@ -66,12 +65,9 @@ public static class Filters
         {  1,  1,  1 },
     }, factor: 1, bias: 128);
 
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when the <paramref name="distance"/> is less than 0.
-    /// </exception>
     public static Filter ShiftRight(int distance = 1)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(distance, 0, nameof(distance));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(distance, nameof(distance));
 
         int size = (2 * distance) + 1;
         var kernel = new float[size, size];
@@ -81,7 +77,7 @@ public static class Filters
 
     public static Filter ShiftLeft(int distance = 1)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(distance, 0, nameof(distance));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(distance, nameof(distance));
 
         int size = (2 * distance) + 1;
         var kernel = new float[size, size];
@@ -91,7 +87,7 @@ public static class Filters
 
     public static Filter ShiftTop(int distance = 1)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(distance, 0, nameof(distance));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(distance, nameof(distance));
 
         int size = (2 * distance) + 1;
         var kernel = new float[size, size];
@@ -101,7 +97,7 @@ public static class Filters
 
     public static Filter ShiftBottom(int distance = 1)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(distance, 0, nameof(distance));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(distance, nameof(distance));
 
         int size = (2 * distance) + 1;
         var kernel = new float[size, size];
@@ -129,7 +125,7 @@ public static class Filters
 
     public static Filter GaussianBlur(float sigma)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(sigma, 0, nameof(sigma));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(sigma, nameof(sigma));
 
         int radius = (int)Math.Ceiling(3 * sigma);
         int size = (2 * radius) + 1;

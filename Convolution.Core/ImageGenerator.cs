@@ -15,6 +15,10 @@ public class ImageGenerator(int? seed = null)
 
     public Image<RgbaVector> Next(int width = 200, int height = 150, int shapeCount = 10)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width, nameof(width));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height, nameof(height));
+        ArgumentOutOfRangeException.ThrowIfNegative(shapeCount, nameof(shapeCount));
+
         var image = new Image<RgbaVector>(width, height);
         image.Mutate(ctx => ctx.BackgroundColor(this.NextColor()));
         for (int i = 0; i < shapeCount; i++)
@@ -50,14 +54,14 @@ public class ImageGenerator(int? seed = null)
                     ctx.Fill(color, new EllipsePolygon(
                         x,
                         y,
-                        radius: this.random.Next(10, 150)));
+                        radius: this.random.Next(20, 200)));
                     break;
                 case 2:
                     ctx.Fill(color, new RegularPolygon(
                         x,
                         y,
                         vertices: 3,
-                        radius: this.random.Next(10, 150)));
+                        radius: this.random.Next(20, 200)));
                     break;
             }
         });

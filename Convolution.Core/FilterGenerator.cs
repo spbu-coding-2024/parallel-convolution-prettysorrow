@@ -13,9 +13,11 @@ public class FilterGenerator(int? seed = null)
         float bias = 0.0f,
         EdgeMode edgeMode = EdgeMode.Clamp)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(size, nameof(size));
+
         if (size % 2 == 0)
         {
-            throw new ArgumentException("Kernel size must be odd.", nameof(size));
+            throw new ArgumentOutOfRangeException(nameof(size), "Kernel size must be odd.");
         }
 
         var kernel = new float[size, size];
