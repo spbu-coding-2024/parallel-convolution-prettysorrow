@@ -63,4 +63,45 @@ public class EdgeCases
         Assert.NotNull(composedClamp);
         Assert.NotNull(composedWrap);
     }
+
+    [Fact]
+    public void Pad_NegativeOrZeroPadding_ThrowsArgumentException()
+    {
+        var filter = Filters.Identity;
+        Assert.Throws<ArgumentException>(() => filter.Pad(padding: 0));
+        Assert.Throws<ArgumentException>(() => filter.Pad(padding: -1));
+    }
+
+    [Fact]
+    public void Pad_PozitivePadding_DoesNotThrows()
+    {
+        var filter = Filters.Identity;
+        var paddedFilter1 = filter.Pad(padding: 1);
+        var paddedFilter5 = filter.Pad(padding: 5);
+        var paddedFilter50 = filter.Pad(padding: 50);
+
+        Assert.NotNull(paddedFilter1);
+        Assert.NotNull(paddedFilter5);
+        Assert.NotNull(paddedFilter50);
+    }
+
+    [Fact]
+    public void FilterGenerator_EvenKernelSize_ThrowsArgumentOutOfRangeException()
+    {
+        var generator = new FilterGenerator(null);
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(2));
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(16));
+    }
+
+    [Fact]
+    public void FilterGenerator_NegativeKernelSize_ThrowsArgumentOutOfRangeException()
+    {
+        var generator = new FilterGenerator(null);
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(-2));
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(-15));
+    }
 }
