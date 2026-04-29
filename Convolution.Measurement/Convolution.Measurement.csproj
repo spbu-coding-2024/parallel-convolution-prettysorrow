@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Convolution.Core\Convolution.Core.csproj" />
-    <ProjectReference Include="..\Convolution.Extensions\Convolution.Extensions.csproj" />
     <ProjectReference Include="..\Convolution.Impl\Convolution.Impl.csproj" />
   </ItemGroup>
 
