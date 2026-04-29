@@ -5,14 +5,7 @@ namespace Convolution.Core;
 /// </summary>
 public enum EdgeMode
 {
-    /// <summary>
-    /// Pixels outside the image boundaries are clamped to the nearest edge pixel.
-    /// </summary>
     Clamp,
-
-    /// <summary>
-    /// Pixels outside the image boundaries are wrapped around to the opposite edge.
-    /// </summary>
     Wrap,
 }
 
@@ -21,35 +14,16 @@ public enum EdgeMode
 /// </summary>
 public sealed class Filter
 {
-    /// <summary>
-    /// Gets the filter kernel matrix.
-    /// </summary>
     public float[,] Kernel { get; }
 
-    /// <summary>
-    /// Gets the factor multiplier applied to the convolution result.
-    /// </summary>
+    public int KernelSize => this.Kernel.GetLength(0);
+
     public float Factor { get; }
 
-    /// <summary>
-    /// Gets the bias value added to the convolution result.
-    /// </summary>
     public float Bias { get; }
 
-    /// <summary>
-    /// Gets the edge handling mode for pixels outside image boundaries.
-    /// </summary>
     public EdgeMode EdgeMode { get; }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Filter"/> class.
-    /// </summary>
-    /// <exception cref="ArgumentException">
-    /// Thrown when <paramref name="kernel"/> is not square (first and second dimensions differ).
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    /// Thrown when the size of <paramref name="kernel"/> is even (must be odd).
-    /// </exception>
     public Filter(float[,] kernel, float factor = 1.0f, float bias = 0.0f, EdgeMode edgeMode = EdgeMode.Clamp)
     {
         if (kernel.GetLength(0) != kernel.GetLength(1))

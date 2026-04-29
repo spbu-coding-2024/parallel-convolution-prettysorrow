@@ -13,9 +13,6 @@ public class ImageGenerator(int? seed = null)
 {
     private readonly Random random = seed.HasValue ? new Random(seed.Value) : new Random();
 
-    /// <summary>
-    /// Generates a random image with specified number of random shapes.
-    /// </summary>
     public Image<RgbaVector> Next(int width = 200, int height = 150, int shapeCount = 10)
     {
         var image = new Image<RgbaVector>(width, height);

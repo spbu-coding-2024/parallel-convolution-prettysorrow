@@ -79,9 +79,6 @@ public static class Filters
         return new Filter(kernel, factor: 1, bias: 0, EdgeMode.Wrap);
     }
 
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when the <paramref name="distance"/> is less than 0.
-    /// </exception>
     public static Filter ShiftLeft(int distance = 1)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(distance, 0, nameof(distance));
@@ -92,9 +89,6 @@ public static class Filters
         return new Filter(kernel, factor: 1, bias: 0, EdgeMode.Wrap);
     }
 
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when the <paramref name="distance"/> is less than 0.
-    /// </exception>
     public static Filter ShiftTop(int distance = 1)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(distance, 0, nameof(distance));
@@ -105,9 +99,6 @@ public static class Filters
         return new Filter(kernel, factor: 1, bias: 0, EdgeMode.Wrap);
     }
 
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when the <paramref name="distance"/> is less than 0.
-    /// </exception>
     public static Filter ShiftBottom(int distance = 1)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(distance, 0, nameof(distance));
@@ -118,9 +109,6 @@ public static class Filters
         return new Filter(kernel, factor: 1, bias: 0, EdgeMode.Wrap);
     }
 
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when the <paramref name="radius"/> is less than 1.
-    /// </exception>
     public static Filter BoxBlur(int radius)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(radius, 1, nameof(radius));
@@ -139,9 +127,6 @@ public static class Filters
         return new Filter(kernel, factor: 1, bias: 0);
     }
 
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when the <paramref name="sigma"/> is less than 0.
-    /// </exception>
     public static Filter GaussianBlur(float sigma)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(sigma, 0, nameof(sigma));
