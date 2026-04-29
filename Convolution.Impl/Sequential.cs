@@ -1,7 +1,6 @@
 namespace Convolution.Impl;
 
 using Convolution.Core;
-using Convolution.Extensions;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -11,20 +10,26 @@ using SixLabors.ImageSharp.PixelFormats;
 public static class Sequential
 {
     /// <summary>
-    /// Applies a convolution filter to an image sequentially.
+    /// Applies a convolution filter to an image.
     /// </summary>
-    public static Image<RgbaVector> Apply(Image<RgbaVector> source, Filter filter)
+    public static Image<RgbaVector> Apply(this Filter filter, Image<RgbaVector> image)
     {
-        var result = new Image<RgbaVector>(source.Width, source.Height);
+        var result = new Image<RgbaVector>(image.Width, image.Height);
 
-        for (int y = 0; y < source.Height; y++)
+        for (int y = 0; y < image.Height; y++)
         {
-            for (int x = 0; x < source.Width; x++)
+            for (int x = 0; x < image.Width; x++)
             {
-                result[x, y] = source.FilterOnePixel(filter, x, y);
+                result[x, y] = image.FilterOnePixel(filter, x, y);
             }
         }
 
         return result;
     }
+
+    /// <summary>
+    /// Filters an image using specified convolution filter.
+    /// </summary>
+    public static Image<RgbaVector> Filter(this Image<RgbaVector> image, Filter filter)
+        => Apply(filter, image);
 }

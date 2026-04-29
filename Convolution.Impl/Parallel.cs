@@ -1,7 +1,6 @@
 namespace Convolution.Impl;
 
 using Convolution.Core;
-using Convolution.Extensions;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -11,30 +10,36 @@ using SixLabors.ImageSharp.PixelFormats;
 public static class Parallel
 {
     /// <summary>
-    /// Applies a convolution filter to an image using row-by-row parallel processing.
+    /// Applies a convolution filter to an image.
     /// </summary>
-    public static Image<RgbaVector> Apply(Image<RgbaVector> source, Filter filter)
-        => ApplyRows(source, filter);
+    public static Image<RgbaVector> Apply(this Filter filter, Image<RgbaVector> image)
+        => filter.ApplyRows(image);
+
+    /// <summary>
+    /// Filters an image using specified convolution filter.
+    /// </summary>
+    public static Image<RgbaVector> Filter(this Image<RgbaVector> image, Filter filter)
+        => filter.ApplyRows(image);
 
     /// <summary>
     /// Applies a convolution filter to an image using row-by-row parallel processing.
     /// </summary>
-    public static Image<RgbaVector> ApplyRows(Image<RgbaVector> source, Filter filter)
+    public static Image<RgbaVector> ApplyRows(this Filter filter, Image<RgbaVector> image)
     {
-        Image<RgbaVector> result = new(source.Width, source.Height);
+        Image<RgbaVector> result = new(image.Width, image.Height);
 
-        int batchSize = Math.Max(1, source.Height / Environment.ProcessorCount);
-        int batchesAmount = (source.Height + batchSize - 1) / batchSize;
+        int batchSize = Math.Max(1, image.Height / Environment.ProcessorCount);
+        int batchesAmount = (image.Height + batchSize - 1) / batchSize;
 
         System.Threading.Tasks.Parallel.For(0, batchesAmount, batchIndex =>
         {
             int startY = batchIndex * batchSize;
-            int endY = Math.Min(startY + batchSize, source.Height);
+            int endY = Math.Min(startY + batchSize, image.Height);
 
             int startX = 0;
-            int endX = source.Width;
+            int endX = image.Width;
 
-            ApplyOneTile(source, result, filter, startY, endY, startX, endX);
+            filter.ApplyOneTile(image, result, startY, endY, startX, endX);
         });
 
         return result;
@@ -43,22 +48,22 @@ public static class Parallel
     /// <summary>
     /// Applies a convolution filter to an image using column-by-column parallel processing.
     /// </summary>
-    public static Image<RgbaVector> ApplyColumns(Image<RgbaVector> source, Filter filter)
+    public static Image<RgbaVector> ApplyColumns(this Filter filter, Image<RgbaVector> image)
     {
-        Image<RgbaVector> result = new(source.Width, source.Height);
+        Image<RgbaVector> result = new(image.Width, image.Height);
 
-        int batchSize = Math.Max(1, source.Width / Environment.ProcessorCount);
-        int batchesAmount = (source.Width + batchSize - 1) / batchSize;
+        int batchSize = Math.Max(1, image.Width / Environment.ProcessorCount);
+        int batchesAmount = (image.Width + batchSize - 1) / batchSize;
 
         System.Threading.Tasks.Parallel.For(0, batchesAmount, batchIndex =>
         {
             int startY = 0;
-            int endY = source.Height;
+            int endY = image.Height;
 
             int startX = batchIndex * batchSize;
-            int endX = Math.Min(startX + batchSize, source.Width);
+            int endX = Math.Min(startX + batchSize, image.Width);
 
-            ApplyOneTile(source, result, filter, startY, endY, startX, endX);
+            filter.ApplyOneTile(image, result, startY, endY, startX, endX);
         });
 
         return result;
@@ -67,14 +72,14 @@ public static class Parallel
     /// <summary>
     /// Applies a convolution filter to an image using tiled parallel processing.
     /// </summary>
-    public static Image<RgbaVector> ApplyTiles(Image<RgbaVector> source, Filter filter, int tileSize)
+    public static Image<RgbaVector> ApplyTiles(this Filter filter, Image<RgbaVector> image, int tileSize)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(tileSize);
 
-        Image<RgbaVector> result = new(source.Width, source.Height);
+        Image<RgbaVector> result = new(image.Width, image.Height);
 
-        int tilesAcross = (source.Width + tileSize - 1) / tileSize;
-        int tilesDown = (source.Height + tileSize - 1) / tileSize;
+        int tilesAcross = (image.Width + tileSize - 1) / tileSize;
+        int tilesDown = (image.Height + tileSize - 1) / tileSize;
         int tilesTotal = tilesAcross * tilesDown;
 
         // left-to-right-top-to-bottom tiles traverse order
@@ -82,13 +87,13 @@ public static class Parallel
         {
             int tileRow = tileIndex / tilesAcross;
             int startY = tileRow * tileSize;
-            int endY = Math.Min(startY + tileSize, source.Height);
+            int endY = Math.Min(startY + tileSize, image.Height);
 
             int tileColumn = tileIndex % tilesAcross;
             int startX = tileColumn * tileSize;
-            int endX = Math.Min(startX + tileSize, source.Width);
+            int endX = Math.Min(startX + tileSize, image.Width);
 
-            ApplyOneTile(source, result, filter, startY, endY, startX, endX);
+            filter.ApplyOneTile(image, result, startY, endY, startX, endX);
         });
 
         return result;
@@ -97,10 +102,10 @@ public static class Parallel
     /// <summary>
     /// Applies a convolution filter to an image using tiled parallel processing.
     /// </summary>
-    public static Image<RgbaVector> ApplyTiles(Image<RgbaVector> source, Filter filter)
+    public static Image<RgbaVector> ApplyTiles(this Filter filter, Image<RgbaVector> image)
     {
-        int tileSize = EstimateOptimalTileSize(source.Width, source.Height);
-        return ApplyTiles(source, filter, tileSize);
+        int tileSize = EstimateOptimalTileSize(image.Width, image.Height);
+        return filter.ApplyTiles(image, tileSize);
     }
 
     private static int EstimateOptimalTileSize(int width, int height)
@@ -112,9 +117,9 @@ public static class Parallel
 
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     private static void ApplyOneTile(
+        this Filter filter,
         Image<RgbaVector> source,
         Image<RgbaVector> destination,
-        Filter filter,
         int startY,
         int endY,
         int startX,
