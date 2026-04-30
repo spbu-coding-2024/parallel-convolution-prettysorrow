@@ -8,17 +8,16 @@ using SixLabors.ImageSharp.PixelFormats;
 /// <summary>
 /// Benchmark which runs on random generated images and compares different convolution implementations.
 /// </summary>
-[MemoryDiagnoser]
 [MarkdownExporter]
 [CsvExporter]
-[SimpleJob(warmupCount: 1, iterationCount: 5)]
+[SimpleJob(warmupCount: 3, iterationCount: 10)]
 [Config(typeof(BenchmarkConfig))]
 public class RandomBenchmark
 {
-    [Params(128, 256)]
+    [Params(128, 256, 512)]
     public int ImageSize { get; set; }
 
-    [Params(5, 13)]
+    [Params(5, 13, 32)]
     public int FilterSize { get; set; }
 
     private readonly ImageGenerator imageGenerator = new(seed: 42);
@@ -52,6 +51,10 @@ public class RandomBenchmark
     [Benchmark]
     public Image<RgbaVector> Parallel_Tiles_Size8()
         => Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 8);
+
+    [Benchmark]
+    public Image<RgbaVector> Parallel_Tiles_Size32()
+   => Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 32);
 
     [Benchmark]
     public Image<RgbaVector> Parallel_Tiles_Size128()
