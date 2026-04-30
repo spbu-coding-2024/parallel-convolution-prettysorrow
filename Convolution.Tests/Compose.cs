@@ -1,11 +1,11 @@
 namespace Convolution.Tests;
 
 using Convolution.Core;
-using static Convolution.Impl.Parallel;
+using static Convolution.Impl.Sequential;
 using Xunit;
 
 /// <summary>
-/// Tests Convolution.Core.Filter.Compose using parallel implementation.
+/// Tests Convolution.Core.Filter.Compose using sequential implementation.
 /// </summary>
 [Trait("Suite", "Abstract")]
 public abstract class ComposeTests
