@@ -1,19 +1,40 @@
 REPO_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+BENCHMARK_REPORT_CSV ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Benchmark-report.csv
 
 export REPO_ROOT
+export BENCHMARK_REPORT_CSV
+
+deps-brew:
+	brew install dotnet-sdk
+	brew install python
+	dotnet restore
+	dotnet tool restore
 
 clean:
 	dotnet clean
 	rm -rf $(REPO_ROOT)/Artifacts/Coverage
 	rm -rf $(REPO_ROOT)/Artifacts/Benchmark
 
-restore:
-	dotnet restore
-	dotnet tool restore
-
 .PHONY: test
 test:
 	dotnet test $(REPO_ROOT)/Convolution.Tests/Convolution.Tests.csproj --filter "Suite=All"
+
+benchmark:
+	dotnet run -c Release --project $(REPO_ROOT)/Convolution.Measurement
+
+venv:
+	python3 -m venv $(REPO_ROOT)/venv
+	$(REPO_ROOT)/venv/bin/pip install matplotlib pandas seaborn
+
+$(BENCHMARK_REPORT_CSV):
+	dotnet run -c Release --project $(REPO_ROOT)/Convolution.Measurement
+
+plot: venv $(BENCHMARK_REPORT_CSV)
+	$(REPO_ROOT)/venv/bin/python $(REPO_ROOT)/scripts/plot.py
+
+restore:
+	dotnet restore
+	dotnet tool restore
 
 coverage: restore
 	dotnet test $(REPO_ROOT)/Convolution.Tests/Convolution.Tests.csproj \
