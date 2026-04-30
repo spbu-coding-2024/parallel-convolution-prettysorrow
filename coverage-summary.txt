@@ -1,0 +1,32 @@
+Summary
+  Generated on: 04/30/2026 - 20:09:19
+  Coverage date: 04/30/2026 - 20:09:19
+  Parser: Cobertura
+  Assemblies: 2
+  Classes: 8
+  Files: 8
+  Line coverage: 96.6%
+  Covered lines: 376
+  Uncovered lines: 13
+  Coverable lines: 389
+  Total lines: 645
+  Branch coverage: 89.2% (75 of 84)
+  Covered branches: 75
+  Total branches: 84
+  Method coverage: 97.2% (35 of 36)
+  Full method coverage: 86.1% (31 of 36)
+  Covered methods: 35
+  Fully covered methods: 31
+  Total methods: 36
+
+Convolution.Core                        96%
+  Convolution.Core.Filter             77.7%
+  Convolution.Core.FilterExtensions     96%
+  Convolution.Core.FilterGenerator    88.2%
+  Convolution.Core.Filters             100%
+  Convolution.Core.ImageExtensions    92.7%
+  Convolution.Core.ImageGenerator      100%
+
+Convolution.Impl                      98.8%
+  Convolution.Impl.Parallel           98.6%
+  Convolution.Impl.Sequential          100%
