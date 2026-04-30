@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: make restore
+      - run: make test
+
+  coverage:
+    name: Generate coverage report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: make restore
+      - run: make coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            Artifacts/Coverage/coverage-report.xml
+            Artifacts/Coverage/coverage-summary.txt
