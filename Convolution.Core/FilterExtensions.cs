@@ -7,7 +7,7 @@ public static class FilterExtensions
 {
     /// <summary>
     /// Returns a new filter with the kernel padded with zeros around the edges.
-    /// The kernel size increases by <paramref name="padding"/> * 2 in each dimension.
+    /// The kernel size increases by <paramref name="padding"/> * 2.
     /// </summary>
     public static Filter Pad(this Filter filter, int padding)
     {

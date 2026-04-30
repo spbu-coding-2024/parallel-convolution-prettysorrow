@@ -66,8 +66,8 @@ public abstract class InvariantTests
     {
         using var image = ImageGenerator.Next(width, height);
         var defaultFilter = FilterGenerator.Next();
-        var paddedFilter1 = defaultFilter.Pad(1);
-        var paddedFilter5 = defaultFilter.Pad(5);
+        var paddedFilter1 = defaultFilter.Pad(padding: 1);
+        var paddedFilter5 = defaultFilter.Pad(padding: 5);
 
         using var seqResultDefault = Impl.Sequential.Apply(defaultFilter, image);
         using var seqResultPad1 = Impl.Sequential.Apply(paddedFilter1, image);

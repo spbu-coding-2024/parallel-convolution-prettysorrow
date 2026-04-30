@@ -51,3 +51,4 @@ coverage: restore
 		-reporttypes:"TextSummary"
 
 	mv $(REPO_ROOT)/Artifacts/Coverage/Summary.txt $(REPO_ROOT)/Artifacts/Coverage/coverage-summary.txt
+	cat $(REPO_ROOT)/Artifacts/Coverage/coverage-summary.txt
