@@ -1,5 +1,5 @@
 REPO_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-BENCHMARK_REPORT_CSV ?= $(REPO_ROOT)/Artifacts/RandomBenchmark/Convolution.Measurement.RandomBenchmark-report.csv
+BENCHMARK_REPORT_CSV ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Benchmark-report.csv
 
 export REPO_ROOT
 export BENCHMARK_REPORT_CSV
@@ -13,7 +13,7 @@ deps-brew:
 clean:
 	dotnet clean
 	rm -rf $(REPO_ROOT)/Artifacts/Coverage
-	rm -rf $(REPO_ROOT)/Artifacts/RandomBenchmark
+	rm -rf $(REPO_ROOT)/Artifacts/Benchmark
 
 .PHONY: test
 test:

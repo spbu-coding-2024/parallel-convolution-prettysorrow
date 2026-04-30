@@ -8,11 +8,11 @@ var config = DefaultConfig.Instance
                 .WithArtifactsPath("Artifacts") // writes results to <repo root>/Artifacts/
                 .WithOption(ConfigOptions.DisableLogFile, true); // no .log file
 
-BenchmarkRunner.Run<RandomBenchmark>(config);
+BenchmarkRunner.Run<Benchmark>(config);
 
 try
 {
-    Directory.Delete("Artifacts/RandomBenchmark", recursive: true);
+    Directory.Delete("Artifacts/Benchmark", recursive: true);
 }
 catch (DirectoryNotFoundException)
 {
@@ -20,9 +20,9 @@ catch (DirectoryNotFoundException)
 
 try
 {
-    Directory.Move("Artifacts/results", "Artifacts/RandomBenchmark");
-    File.Delete("Artifacts/RandomBenchmark/Convolution.Measurement.RandomBenchmark-report-default.md");
-    File.Move("Artifacts/RandomBenchmark/Convolution.Measurement.RandomBenchmark-report-github.md", "Artifacts/RandomBenchmark/Convolution.Measurement.RandomBenchmark-report.md");
+    Directory.Move("Artifacts/results", "Artifacts/Benchmark");
+    File.Delete("Artifacts/Benchmark/Convolution.Measurement.Benchmark-report-default.md");
+    File.Move("Artifacts/Benchmark/Convolution.Measurement.Benchmark-report-github.md", "Artifacts/Benchmark/Convolution.Measurement.Benchmark-report.md");
 }
 catch (Exception ex)
 {

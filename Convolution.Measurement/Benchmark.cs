@@ -12,7 +12,7 @@ using SixLabors.ImageSharp.PixelFormats;
 [CsvExporter]
 [SimpleJob(warmupCount: 3, iterationCount: 10)]
 [Config(typeof(BenchmarkConfig))]
-public class RandomBenchmark
+public class Benchmark
 {
     [Params(128, 256, 512)]
     public int ImageSize { get; set; }

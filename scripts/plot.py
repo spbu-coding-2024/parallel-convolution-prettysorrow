@@ -8,9 +8,9 @@ import os
 repo_root = os.environ["REPO_ROOT"]
 input_path = os.environ["BENCHMARK_REPORT_CSV"]
 
-os.makedirs(f"{repo_root}/Artifacts/RandomBenchmark", exist_ok=True)
+os.makedirs(f"{repo_root}/Artifacts/Benchmark", exist_ok=True)
 output_path = os.path.join(
-    f"{repo_root}/Artifacts/RandomBenchmark",
+    f"{repo_root}/Artifacts/Benchmark",
     os.path.basename(input_path).replace(".csv", ".png")
 )
 
