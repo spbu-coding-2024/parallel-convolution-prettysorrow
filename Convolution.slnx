@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Convolution.Core/Convolution.Core.csproj" />
+  <Project Path="Convolution.Driver/Convolution.Driver.csproj" />
+  <Project Path="Convolution.Impl/Convolution.Impl.csproj" />
+  <Project Path="Convolution.Tests/Convolution.Tests.csproj" />
+</Solution>
