@@ -47,7 +47,7 @@ jobs:
           python-version: '3.14.x'
       - run: make restore
       - run: make benchmark
-      - run: make plot
+      - run: make plots
       - uses: actions/upload-artifact@v4
         with:
           name: benchmark-results
@@ -74,10 +74,11 @@ jobs:
 
       - name: Prepare deploy
         run: |
-          mkdir public
+          mkdir public public/Coverage public/Benchmark
           cp Artifacts/index.html                                                        public/
-          cp coverage-artifact/coverage-summary.txt                                      public/
-          cp benchmark-artifact/Convolution.Measurement.Benchmark-report.png       public/
+          cp coverage-artifact/coverage-summary.txt                                      public/Coverage/coverage-summary.txt
+          cp benchmark-artifact/Convolution.Measurement.Benchmark-report.png             public/Benchmark/Convolution.Measurement.Benchmark-report.png
+          cp benchmark-artifact/Convolution.Measurement.Pipelines-report.png             public/Benchmark/Convolution.Measurement.Pipelines-report.png
 
       - uses: peaceiris/actions-gh-pages@v3
         with:
