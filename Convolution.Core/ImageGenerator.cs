@@ -66,4 +66,28 @@ public class ImageGenerator(int? seed = null)
             }
         });
     }
+
+    public List<string> WriteRandomImages(string destDir, int count = 10, int width = 200, int height = 100)
+    {
+        if (!Directory.Exists(destDir))
+        {
+            throw new DirectoryNotFoundException(nameof(destDir));
+        }
+
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count, nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width, nameof(width));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height, nameof(height));
+
+        List<string> result = new(count);
+
+        for (int i = 0; i < count; ++i)
+        {
+            using var image = this.Next(width, height);
+            string imagePath = System.IO.Path.Combine(destDir, $"{Guid.NewGuid()}.png");
+            image.Save(imagePath);
+            result.Add(imagePath);
+        }
+
+        return result;
+    }
 }
