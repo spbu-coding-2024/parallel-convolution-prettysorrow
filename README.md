@@ -24,4 +24,6 @@ All output is written to `Artifacts/`.
 
 `make plot` generates a PNG chart from the last benchmark run
 
-![Benchmark results](Artifacts/Benchmark/Convolution.Measurement.Benchmark-report.png)
+![Compare sequential and parallel](Artifacts/Benchmark/Convolution.Measurement.Benchmark-report.png)
+
+![Compare pipelines](Artifacts/Benchmark/Convolution.Measurement.Pipelines-report.png)
