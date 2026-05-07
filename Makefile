@@ -44,7 +44,7 @@ benchmark: $(BENCHMARK_REPORT_CSV) $(PIPELINES_BENCHMARK_REPORT_CSV)
 # plots
 
 $(BENCHMARK_REPORT_PNG): venv $(BENCHMARK_REPORT_CSV)
-	$(REPO_ROOT)/venv/bin/python $(REPO_ROOT)/scripts/plot.py
+	$(REPO_ROOT)/venv/bin/python $(REPO_ROOT)/scripts/benchmark-plot.py
 
 $(PIPELINES_BENCHMARK_REPORT_PNG): venv $(PIPELINES_BENCHMARK_REPORT_CSV)
 	$(REPO_ROOT)/venv/bin/python $(REPO_ROOT)/scripts/pipelines-plot.py

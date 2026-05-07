@@ -7,12 +7,9 @@ import os
 
 repo_root = os.environ["REPO_ROOT"]
 input_path = os.environ["BENCHMARK_REPORT_CSV"]
+output_path = os.environ["BENCHMARK_REPORT_PNG"]
 
 os.makedirs(f"{repo_root}/Artifacts/Benchmark", exist_ok=True)
-output_path = os.path.join(
-    f"{repo_root}/Artifacts/Benchmark",
-    os.path.basename(input_path).replace(".csv", ".png")
-)
 
 df = pandas.read_csv(input_path)
 df = df[df["Method"].notna()]
