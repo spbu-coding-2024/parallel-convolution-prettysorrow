@@ -65,11 +65,11 @@ public class EdgeCases
     }
 
     [Fact]
-    public void Pad_NegativeOrZeroPadding_ThrowsArgumentException()
+    public void Pad_NegativeOrZeroPadding_ThrowsArgumentOutOfRangeException()
     {
         var filter = Filters.Identity;
-        Assert.Throws<ArgumentException>(() => filter.Pad(padding: 0));
-        Assert.Throws<ArgumentException>(() => filter.Pad(padding: -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => filter.Pad(padding: 0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => filter.Pad(padding: -1));
     }
 
     [Fact]
