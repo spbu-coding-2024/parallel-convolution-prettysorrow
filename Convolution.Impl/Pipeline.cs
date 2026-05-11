@@ -6,35 +6,35 @@ using SixLabors.ImageSharp.PixelFormats;
 
 public sealed class AsyncPipelineOptions
 {
-    public Func<Image<RgbaVector>, Image<RgbaVector>> Modify { get; init; }
+    public Func<Image<RgbaVector>, Image<RgbaVector>> Convolve { get; init; }
 
-    public (int read, int modify, int write) WorkerCount { get; init; }
+    public (int read, int convolve, int write) WorkerCount { get; init; }
 
     public (int paths, int raw, int convolved) ChannelCapacity { get; init; }
 
     public AsyncPipelineOptions(
-        Func<Image<RgbaVector>, Image<RgbaVector>> modify,
-        (int read, int modify, int write) workerCount,
+        Func<Image<RgbaVector>, Image<RgbaVector>> convolve,
+        (int read, int convolve, int write) workerCount,
         (int paths, int raw, int convolved) channelCapacity)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(workerCount.read);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(workerCount.modify);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(workerCount.convolve);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(workerCount.write);
 
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(channelCapacity.paths);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(channelCapacity.raw);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(channelCapacity.convolved);
 
-        this.Modify = modify;
+        this.Convolve = convolve;
         this.WorkerCount = workerCount;
         this.ChannelCapacity = channelCapacity;
     }
 
-    public AsyncPipelineOptions(Func<Image<RgbaVector>, Image<RgbaVector>> modify)
+    public AsyncPipelineOptions(Func<Image<RgbaVector>, Image<RgbaVector>> convolve)
     {
-        this.Modify = modify;
+        this.Convolve = convolve;
         var pc = Environment.ProcessorCount;
-        this.WorkerCount = (read: 2, modify: pc, write: 2);
+        this.WorkerCount = (read: 2, convolve: pc, write: 2);
         this.ChannelCapacity = (paths: pc * 2, raw: pc * 2, convolved: pc * 2);
     }
 }
@@ -70,11 +70,11 @@ public static class Pipeline
             }
         }
 
-        async Task ModifyImages()
+        async Task ConvolveImages()
         {
             await foreach (var envelope in rawChannel.Reader.ReadAllAsync(ct))
             {
-                var convolved = options.Modify(envelope.image);
+                var convolved = options.Convolve(envelope.image);
                 envelope.image.Dispose();
                 await convolvedChannel.Writer.WriteAsync(new ImageEnvelope(envelope.path, convolved), ct);
             }
@@ -98,10 +98,10 @@ public static class Pipeline
             readers[i] = Task.Run(ReadImages, ct);
         }
 
-        var modifiers = new Task[options.WorkerCount.modify];
-        for (int i = 0; i < options.WorkerCount.modify; i++)
+        var modifiers = new Task[options.WorkerCount.convolve];
+        for (int i = 0; i < options.WorkerCount.convolve; i++)
         {
-            modifiers[i] = Task.Run(ModifyImages, ct);
+            modifiers[i] = Task.Run(ConvolveImages, ct);
         }
 
         var writers = new Task[options.WorkerCount.write];
