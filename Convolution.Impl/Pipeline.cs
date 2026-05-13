@@ -157,4 +157,14 @@ public static class Pipeline
     {
         ProcessSync(inputPaths, makeOutputPath, convolve: image => Convolution.Impl.Parallel.Apply(filter, image));
     }
+
+    public static async Task ProccessUnsafeAsync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Convolution.Core.Filter filter)
+    {
+        await ProcessAsync(inputPaths, makeOutputPath, image => Convolution.Impl.Unsafe.Apply(filter, image));
+    }
+
+    public static void ProccessUnsafeSync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Convolution.Core.Filter filter)
+    {
+        ProcessSync(inputPaths, makeOutputPath, image => Convolution.Impl.Unsafe.Apply(filter, image));
+    }
 }
