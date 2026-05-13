@@ -10,14 +10,14 @@ using SixLabors.ImageSharp.PixelFormats;
 /// </summary>
 [MarkdownExporter]
 [CsvExporter]
-[SimpleJob(warmupCount: 3, iterationCount: 10)]
+[SimpleJob(warmupCount: 3, iterationCount: 5)]
 [Config(typeof(BenchmarkConfig))]
 public class Benchmark
 {
-    [Params(128, 256, 512)]
+    [Params(32, 128)]
     public int ImageSize { get; set; }
 
-    [Params(5, 13, 32)]
+    [Params(5, 13)]
     public int FilterSize { get; set; }
 
     private readonly ImageGenerator imageGenerator = new(seed: 42);
@@ -54,9 +54,13 @@ public class Benchmark
 
     [Benchmark]
     public Image<RgbaVector> Parallel_Tiles_Size32()
-   => Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 32);
+        => Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 32);
 
     [Benchmark]
     public Image<RgbaVector> Parallel_Tiles_Size128()
-   => Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 128);
+        => Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 128);
+
+    [Benchmark]
+    public Image<RgbaVector> Unsafe()
+        => Impl.Unsafe.Apply(this.filter, this.sourceImage);
 }

@@ -9,6 +9,7 @@ var config = DefaultConfig.Instance
 
 BenchmarkRunner.Run<Convolution.Measurement.Benchmark>(config);
 BenchmarkRunner.Run<Convolution.Measurement.Pipelines>(config);
+BenchmarkRunner.Run<Convolution.Measurement.Unsafe>(config);
 
 try
 {
@@ -23,8 +24,10 @@ try
     Directory.Move("Artifacts/results", "Artifacts/Benchmark");
     File.Delete("Artifacts/Benchmark/Convolution.Measurement.Benchmark-report-default.md");
     File.Delete("Artifacts/Benchmark/Convolution.Measurement.Pipelines-report-default.md");
+    File.Delete("Artifacts/Benchmark/Convolution.Measurement.Unsafe-report-default.md");
     File.Move("Artifacts/Benchmark/Convolution.Measurement.Benchmark-report-github.md", "Artifacts/Benchmark/Convolution.Measurement.Benchmark-report.md");
     File.Move("Artifacts/Benchmark/Convolution.Measurement.Pipelines-report-github.md", "Artifacts/Benchmark/Convolution.Measurement.Pipelines-report.md");
+    File.Move("Artifacts/Benchmark/Convolution.Measurement.Unsafe-report-github.md", "Artifacts/Benchmark/Convolution.Measurement.Unsafe-report.md");
 }
 catch (Exception ex)
 {

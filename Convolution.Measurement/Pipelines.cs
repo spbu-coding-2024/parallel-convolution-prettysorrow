@@ -5,16 +5,16 @@ using Convolution.Core;
 
 [MarkdownExporter]
 [CsvExporter]
-[SimpleJob(warmupCount: 3, iterationCount: 10)]
+[SimpleJob(warmupCount: 3, iterationCount: 5)]
 [Config(typeof(BenchmarkConfig))]
 public class Pipelines
 {
     private static readonly Func<string, string> MakeOutputPath = path => Path.ChangeExtension(path, ".conv.png");
 
-    [Params(1, 10)]
+    [Params(3, 10)]
     public int ImageCount { get; set; }
 
-    [Params(128, 256, 512)]
+    [Params(32, 128)]
     public int ImageSize { get; set; }
 
     [Params(5, 13)]
@@ -35,7 +35,7 @@ public class Pipelines
     {
         this.testDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(this.testDir);
-        this.inputPaths = this.imageGenerator.WriteRandomImages(this.testDir, count: this.ImageCount);
+        this.inputPaths = this.imageGenerator.WriteRandomImages(this.testDir, count: this.ImageCount, width: this.ImageSize, height: this.ImageSize);
         this.filter = this.filterGenerator.Next(size: this.FilterSize);
     }
 
@@ -63,4 +63,12 @@ public class Pipelines
     [Benchmark]
     public async Task Async_Parallel()
         => await Impl.Pipeline.ProcessParallelAsync(this.inputPaths, MakeOutputPath, this.filter);
+
+    [Benchmark]
+    public async Task Sync_Unsafe()
+        => Impl.Pipeline.ProccessUnsafeSync(this.inputPaths, MakeOutputPath, this.filter);
+
+    [Benchmark]
+    public async Task Async_Unsafe()
+        => await Impl.Pipeline.ProccessUnsafeAsync(this.inputPaths, MakeOutputPath, this.filter);
 }
