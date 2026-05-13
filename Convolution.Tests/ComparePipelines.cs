@@ -73,6 +73,28 @@ public abstract class Pipeline : IDisposable
         await Convolution.Impl.Pipeline.ProcessParallelAsync(paths, MakeOutputPath2, filter);
         CompareResults(paths);
     }
+
+    [Theory]
+    [MemberData("ImageParams")]
+    public async Task ParallelAsync_Matches_UnsafeAsync((int count, int width, int height) prms)
+    {
+        var paths = this.imageGenerator.WriteRandomImages(this.testDir, prms.count, prms.width, prms.height);
+        var filter = this.filterGenerator.Next();
+        await Convolution.Impl.Pipeline.ProccessUnsafeAsync(paths, MakeOutputPath1, filter);
+        await Convolution.Impl.Pipeline.ProcessParallelAsync(paths, MakeOutputPath2, filter);
+        CompareResults(paths);
+    }
+
+    [Theory]
+    [MemberData("ImageParams")]
+    public async Task ParallelSync_Matches_UnsafeSync((int count, int width, int height) prms)
+    {
+        var paths = this.imageGenerator.WriteRandomImages(this.testDir, prms.count, prms.width, prms.height);
+        var filter = this.filterGenerator.Next();
+        Convolution.Impl.Pipeline.ProccessUnsafeSync(paths, MakeOutputPath1, filter);
+        Convolution.Impl.Pipeline.ProcessParallelSync(paths, MakeOutputPath2, filter);
+        CompareResults(paths);
+    }
 }
 
 [Trait("Suite", "All")]

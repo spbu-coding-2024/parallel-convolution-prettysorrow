@@ -1,6 +1,8 @@
 namespace Convolution.Tests;
 
 using Convolution.Core;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
 
 public class EdgeCases
@@ -103,5 +105,31 @@ public class EdgeCases
         Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(-1));
         Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(-2));
         Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(-15));
+    }
+
+    [Fact]
+    public void AsyncPipelineOptions_NegativeOrZeroCounters_ThrowsArgumentOutOfRangeException()
+    {
+        Func<Image<RgbaVector>, Image<RgbaVector>> stub = image => image;
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Convolution.Impl.AsyncPipelineOptions(stub, (0, 1, 1), (1, 1, 1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Convolution.Impl.AsyncPipelineOptions(stub, (-1, 1, 1), (1, 1, 1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Convolution.Impl.AsyncPipelineOptions(stub, (1, 0, 1), (1, 1, 1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Convolution.Impl.AsyncPipelineOptions(stub, (1, -1, 1), (1, 1, 1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Convolution.Impl.AsyncPipelineOptions(stub, (1, 1, 0), (1, 1, 1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Convolution.Impl.AsyncPipelineOptions(stub, (1, 1, -1), (1, 1, 1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Convolution.Impl.AsyncPipelineOptions(stub, (1, 1, 1), (0, 1, 1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Convolution.Impl.AsyncPipelineOptions(stub, (1, 1, 1), (-1, 1, 1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Convolution.Impl.AsyncPipelineOptions(stub, (1, 1, 1), (1, 0, 1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Convolution.Impl.AsyncPipelineOptions(stub, (1, 1, 1), (1, -1, 1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Convolution.Impl.AsyncPipelineOptions(stub, (1, 1, 1), (1, 1, 0)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Convolution.Impl.AsyncPipelineOptions(stub, (1, 1, 1), (1, 1, -1)));
+    }
+
+    [Fact]
+    public void AsyncPipelineOptions_PositiveCounters_DoesNotThrow()
+    {
+        Func<Image<RgbaVector>, Image<RgbaVector>> stub = image => image;
+        var options = new Convolution.Impl.AsyncPipelineOptions(stub, (1, 20, 300), (4000, 50000, 600000));
+        Assert.NotNull(options);
     }
 }
