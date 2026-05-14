@@ -87,3 +87,13 @@ clean:
 	dotnet clean
 	rm -rf $(REPO_ROOT)/Artifacts/Coverage
 	rm -rf $(REPO_ROOT)/Artifacts/Benchmark
+
+LOCALHOST_PORT ?= 8080
+
+preview:
+	lsof -ti:$(LOCALHOST_PORT) | xargs kill -9 2>/dev/null || true
+	cd $(REPO_ROOT)/Artifacts && $(REPO_ROOT)/venv/bin/python -m http.server $(LOCALHOST_PORT) & sleep 1
+	open "http://localhost:$(LOCALHOST_PORT)/index.html"
+
+kill-preview:
+	lsof -ti:$(LOCALHOST_PORT) | xargs kill -9 2>/dev/null || true
