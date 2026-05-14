@@ -11,13 +11,13 @@ public class Pipelines
 {
     private static readonly Func<string, string> MakeOutputPath = path => Path.ChangeExtension(path, ".conv.png");
 
-    [Params(3, 5)]
+    [Params(3, 10)]
     public int ImageCount { get; set; }
 
-    [Params(16, 32)]
+    [Params(32, 128, 512)]
     public int ImageSize { get; set; }
 
-    [Params(3, 5)]
+    [Params(3, 11, 21)]
     public int FilterSize { get; set; }
 
     private readonly ImageGenerator imageGenerator = new(seed: 42);
@@ -50,25 +50,25 @@ public class Pipelines
 
     [Benchmark(Baseline = true)]
     public void Sync_Sequential()
-        => Impl.Pipeline.ProcessSequentialSync(this.inputPaths, MakeOutputPath, this.filter);
+        => Convolution.Impl.Pipeline.ProcessSequentialSync(this.inputPaths, MakeOutputPath, this.filter);
 
     [Benchmark]
     public async Task Async_Sequential()
-        => await Impl.Pipeline.ProcessSequentialAsync(this.inputPaths, MakeOutputPath, this.filter);
+        => await Convolution.Impl.Pipeline.ProcessSequentialAsync(this.inputPaths, MakeOutputPath, this.filter);
 
     [Benchmark]
     public void Sync_Parallel()
-        => Impl.Pipeline.ProcessParallelSync(this.inputPaths, MakeOutputPath, this.filter);
+        => Convolution.Impl.Pipeline.ProcessParallelSync(this.inputPaths, MakeOutputPath, this.filter);
 
     [Benchmark]
     public async Task Async_Parallel()
-        => await Impl.Pipeline.ProcessParallelAsync(this.inputPaths, MakeOutputPath, this.filter);
+        => await Convolution.Impl.Pipeline.ProcessParallelAsync(this.inputPaths, MakeOutputPath, this.filter);
 
     [Benchmark]
     public async Task Sync_Unsafe()
-        => Impl.Pipeline.ProccessUnsafeSync(this.inputPaths, MakeOutputPath, this.filter);
+        => Convolution.Impl.Pipeline.ProccessUnsafeSync(this.inputPaths, MakeOutputPath, this.filter);
 
     [Benchmark]
     public async Task Async_Unsafe()
-        => await Impl.Pipeline.ProccessUnsafeAsync(this.inputPaths, MakeOutputPath, this.filter);
+        => await Convolution.Impl.Pipeline.ProcessUnsafeAsync(this.inputPaths, MakeOutputPath, this.filter);
 }

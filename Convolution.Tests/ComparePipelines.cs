@@ -80,7 +80,7 @@ public abstract class Pipeline : IDisposable
     {
         var paths = this.imageGenerator.WriteRandomImages(this.testDir, prms.count, prms.width, prms.height);
         var filter = this.filterGenerator.Next();
-        await Convolution.Impl.Pipeline.ProccessUnsafeAsync(paths, MakeOutputPath1, filter);
+        await Convolution.Impl.Pipeline.ProcessUnsafeAsync(paths, MakeOutputPath1, filter);
         await Convolution.Impl.Pipeline.ProcessParallelAsync(paths, MakeOutputPath2, filter);
         CompareResults(paths);
     }

@@ -13,13 +13,13 @@ public class Unsafe
 {
     private static readonly Func<string, string> MakeOutputPath = path => Path.ChangeExtension(path, ".conv.png");
 
-    [Params(3, 5)]
+    [Params(3, 10)]
     public int ImageCount { get; set; }
 
-    [Params(16, 32)]
+    [Params(32, 128, 512)]
     public int ImageSize { get; set; }
 
-    [Params(3, 5)]
+    [Params(3, 11, 21)]
     public int FilterSize { get; set; }
 
     private readonly ImageGenerator imageGenerator = new(seed: 42);
@@ -50,12 +50,18 @@ public class Unsafe
         }
     }
 
-    public async Task Run_Single(int imageLevelWorkers, (int read, int convolve, int write) workerCount, (int paths, int raw, int convolved) channelCapacity)
+    private async Task Run_Single(int imageLevelWorkers, (int read, int convolve, int write) workerCount, (int paths, int raw, int convolved) channelCapacity)
     {
         var convolutionOptions = new ParallelOptions { MaxDegreeOfParallelism = imageLevelWorkers };
         Func<Image<RgbaVector>, Image<RgbaVector>> convolve = image => Convolution.Impl.Unsafe.Apply(this.filter, image, convolutionOptions);
         var pipelineOptions = new Convolution.Impl.AsyncPipelineOptions(convolve, workerCount, channelCapacity);
         await Convolution.Impl.Pipeline.ProcessAsync(this.inputPaths, MakeOutputPath, pipelineOptions);
+    }
+
+    private async Task Run_Single(int imageLevelWorkers, (int read, int convolve, int write) workerCount)
+    {
+        (int paths, int raw, int convolved) maxChannelCapacity = (this.ImageCount, this.ImageCount, this.ImageCount);
+        await this.Run_Single(imageLevelWorkers, workerCount, channelCapacity: maxChannelCapacity);
     }
 
     [Benchmark(Baseline = true)]
@@ -72,9 +78,8 @@ public class Unsafe
     {
         int pc = Environment.ProcessorCount;
         (int read, int convolve, int write) workerCount = (pc, pc, pc);
-        (int paths, int raw, int convolved) channelCapacity = (this.ImageCount, this.ImageCount, this.ImageCount);
         var imageLevelWorkers = pc;
-        await this.Run_Single(imageLevelWorkers, workerCount, channelCapacity);
+        await this.Run_Single(imageLevelWorkers, workerCount);
     }
 
     private static (int read, int convolve, int write) MakeWorkerCount(int helpers, int imageLevelWorkers)
@@ -109,8 +114,7 @@ public class Unsafe
         var helpers = 2;
         var imageLevelWorkers = 1;
         var workerCount = MakeWorkerCount(helpers, imageLevelWorkers);
-        (int paths, int raw, int convolved) channelCapacity = (this.ImageCount, this.ImageCount, this.ImageCount);
-        await this.Run_Single(imageLevelWorkers, workerCount, channelCapacity);
+        await this.Run_Single(imageLevelWorkers, workerCount);
     }
 
     [Benchmark]
@@ -119,8 +123,7 @@ public class Unsafe
         var helpers = 2;
         var imageLevelWorkers = 4;
         var workerCount = MakeWorkerCount(helpers, imageLevelWorkers);
-        (int paths, int raw, int convolved) channelCapacity = (this.ImageCount, this.ImageCount, this.ImageCount);
-        await this.Run_Single(imageLevelWorkers, workerCount, channelCapacity);
+        await this.Run_Single(imageLevelWorkers, workerCount);
     }
 
     [Benchmark]
@@ -129,8 +132,7 @@ public class Unsafe
         var helpers = 2;
         var imageLevelWorkers = 8;
         var workerCount = MakeWorkerCount(helpers, imageLevelWorkers);
-        (int paths, int raw, int convolved) channelCapacity = (this.ImageCount, this.ImageCount, this.ImageCount);
-        await this.Run_Single(imageLevelWorkers, workerCount, channelCapacity);
+        await this.Run_Single(imageLevelWorkers, workerCount);
     }
 
     [Benchmark]
@@ -139,8 +141,7 @@ public class Unsafe
         var helpers = 4;
         var imageLevelWorkers = 1;
         var workerCount = MakeWorkerCount(helpers, imageLevelWorkers);
-        (int paths, int raw, int convolved) channelCapacity = (this.ImageCount, this.ImageCount, this.ImageCount);
-        await this.Run_Single(imageLevelWorkers, workerCount, channelCapacity);
+        await this.Run_Single(imageLevelWorkers, workerCount);
     }
 
     [Benchmark]
@@ -149,8 +150,7 @@ public class Unsafe
         var helpers = 4;
         var imageLevelWorkers = 4;
         var workerCount = MakeWorkerCount(helpers, imageLevelWorkers);
-        (int paths, int raw, int convolved) channelCapacity = (this.ImageCount, this.ImageCount, this.ImageCount);
-        await this.Run_Single(imageLevelWorkers, workerCount, channelCapacity);
+        await this.Run_Single(imageLevelWorkers, workerCount);
     }
 
     [Benchmark]
@@ -159,7 +159,6 @@ public class Unsafe
         var helpers = 4;
         var imageLevelWorkers = 8;
         var workerCount = MakeWorkerCount(helpers, imageLevelWorkers);
-        (int paths, int raw, int convolved) channelCapacity = (this.ImageCount, this.ImageCount, this.ImageCount);
-        await this.Run_Single(imageLevelWorkers, workerCount, channelCapacity);
+        await this.Run_Single(imageLevelWorkers, workerCount);
     }
 }

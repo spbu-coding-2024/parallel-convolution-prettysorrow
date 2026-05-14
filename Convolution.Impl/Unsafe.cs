@@ -6,18 +6,21 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Advanced;
 using System.Runtime.CompilerServices;
 
+/// <summary>
+/// Memory-access optimized parallel row-by-row image convolution implementation.
+/// </summary>
 public static unsafe class Unsafe
 {
     public static Image<RgbaVector> Apply(this Filter filter, Image<RgbaVector> image, ParallelOptions options)
     {
-        int width = image.Width;
-        int height = image.Height;
+        var width = image.Width;
+        var height = image.Height;
 
         var kernel = filter.Kernel;
-        int kernelSize = filter.KernelSize;
-        int offset = kernelSize / 2;
-        float factor = filter.Factor;
-        float bias = filter.Bias;
+        var kernelSize = filter.KernelSize;
+        var offset = kernelSize / 2;
+        var factor = filter.Factor;
+        var bias = filter.Bias;
         var handleEdges = ChoiceEdgeHandling(filter, width, height);
 
         var result = new Image<RgbaVector>(width, height);

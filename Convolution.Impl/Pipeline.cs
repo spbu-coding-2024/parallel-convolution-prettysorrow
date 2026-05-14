@@ -41,6 +41,32 @@ public sealed class AsyncPipelineOptions
 
 public static class Pipeline
 {
+    public static void ProcessSync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Func<Image<RgbaVector>, Image<RgbaVector>> convolve)
+    {
+        foreach (var path in inputPaths)
+        {
+            using var image = Image.Load<RgbaVector>(path);
+            using var result = convolve(image);
+            string resultPath = makeOutputPath(path);
+            result.Save(resultPath);
+        }
+    }
+
+    public static void ProcessSequentialSync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Convolution.Core.Filter filter)
+    {
+        ProcessSync(inputPaths, makeOutputPath, convolve: image => Convolution.Impl.Sequential.Apply(filter, image));
+    }
+
+    public static void ProcessParallelSync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Convolution.Core.Filter filter)
+    {
+        ProcessSync(inputPaths, makeOutputPath, convolve: image => Convolution.Impl.Parallel.Apply(filter, image));
+    }
+
+    public static void ProccessUnsafeSync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Convolution.Core.Filter filter)
+    {
+        ProcessSync(inputPaths, makeOutputPath, convolve: image => Convolution.Impl.Unsafe.Apply(filter, image));
+    }
+
     private readonly record struct ImageEnvelope(string path, Image<RgbaVector> image);
 
     public static async Task ProcessAsync(
@@ -93,19 +119,19 @@ public static class Pipeline
         var pathWriter = Task.Run(WritePaths, ct);
 
         var readers = new Task[options.WorkerCount.read];
-        for (int i = 0; i < options.WorkerCount.read; i++)
+        for (var i = 0; i < options.WorkerCount.read; i++)
         {
             readers[i] = Task.Run(ReadImages, ct);
         }
 
         var modifiers = new Task[options.WorkerCount.convolve];
-        for (int i = 0; i < options.WorkerCount.convolve; i++)
+        for (var i = 0; i < options.WorkerCount.convolve; i++)
         {
             modifiers[i] = Task.Run(ConvolveImages, ct);
         }
 
         var writers = new Task[options.WorkerCount.write];
-        for (int i = 0; i < options.WorkerCount.write; i++)
+        for (var i = 0; i < options.WorkerCount.write; i++)
         {
             writers[i] = Task.Run(WriteImages, ct);
         }
@@ -127,44 +153,18 @@ public static class Pipeline
         await ProcessAsync(inputPaths, makeOutputPath, new AsyncPipelineOptions(convolve));
     }
 
-    public static void ProcessSync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Func<Image<RgbaVector>, Image<RgbaVector>> convolve)
-    {
-        foreach (var path in inputPaths)
-        {
-            using var image = Image.Load<RgbaVector>(path);
-            using var result = convolve(image);
-            string resultPath = makeOutputPath(path);
-            result.Save(resultPath);
-        }
-    }
-
     public static async Task ProcessSequentialAsync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Convolution.Core.Filter filter)
     {
-        await ProcessAsync(inputPaths, makeOutputPath, image => Convolution.Impl.Sequential.Apply(filter, image));
+        await ProcessAsync(inputPaths, makeOutputPath, convolve: image => Convolution.Impl.Sequential.Apply(filter, image));
     }
 
     public static async Task ProcessParallelAsync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Convolution.Core.Filter filter)
     {
-        await ProcessAsync(inputPaths, makeOutputPath, image => Convolution.Impl.Parallel.Apply(filter, image));
+        await ProcessAsync(inputPaths, makeOutputPath, convolve: image => Convolution.Impl.Parallel.Apply(filter, image));
     }
 
-    public static void ProcessSequentialSync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Convolution.Core.Filter filter)
+    public static async Task ProcessUnsafeAsync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Convolution.Core.Filter filter)
     {
-        ProcessSync(inputPaths, makeOutputPath, convolve: image => Convolution.Impl.Sequential.Apply(filter, image));
-    }
-
-    public static void ProcessParallelSync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Convolution.Core.Filter filter)
-    {
-        ProcessSync(inputPaths, makeOutputPath, convolve: image => Convolution.Impl.Parallel.Apply(filter, image));
-    }
-
-    public static async Task ProccessUnsafeAsync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Convolution.Core.Filter filter)
-    {
-        await ProcessAsync(inputPaths, makeOutputPath, image => Convolution.Impl.Unsafe.Apply(filter, image));
-    }
-
-    public static void ProccessUnsafeSync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Convolution.Core.Filter filter)
-    {
-        ProcessSync(inputPaths, makeOutputPath, image => Convolution.Impl.Unsafe.Apply(filter, image));
+        await ProcessAsync(inputPaths, makeOutputPath, convolve: image => Convolution.Impl.Unsafe.Apply(filter, image));
     }
 }
