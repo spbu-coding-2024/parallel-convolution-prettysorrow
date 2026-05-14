@@ -1,31 +1,5 @@
-# env
-
 REPO_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-
-BENCHMARK_REPORT_CSV ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Benchmark-report.csv
-BENCHMARK_REPORT_PNG ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Benchmark-report.png
-
-PIPELINES_BENCHMARK_REPORT_CSV ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Pipelines-report.csv
-PIPELINES_BENCHMARK_REPORT_PNG ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Pipelines-report.png
-
-UNSAFE_BENCHMARK_REPORT_CSV ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Unsafe-report.csv
-UNSAFE_BENCHMARK_REPORT_PNG ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Unsafe-report.png
-
-COVERAGE_SUMMARY_TXT ?= $(REPO_ROOT)/Artifacts/Coverage/coverage-summary.txt
-
-
 export REPO_ROOT
-
-export BENCHMARK_REPORT_CSV
-export BENCHMARK_REPORT_PNG
-
-export PIPELINES_BENCHMARK_REPORT_CSV
-export PIPELINES_BENCHMARK_REPORT_PNG
-
-export UNSAFE_BENCHMARK_REPORT_CSV
-export UNSAFE_BENCHMARK_REPORT_PNG
-
-export COVERAGE_SUMMARY_TXT
 
 # deps
 
@@ -45,22 +19,37 @@ restore:
 
 # benchmarks
 
+BENCHMARK_REPORT_CSV ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Benchmark-report.csv
+PIPELINES_BENCHMARK_REPORT_CSV ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Pipelines-report.csv
+UNSAFE_BENCHMARK_REPORT_CSV ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Unsafe-report.csv
+
 $(BENCHMARK_REPORT_CSV) $(PIPELINES_BENCHMARK_REPORT_CSV) $(UNSAFE_BENCHMARK_REPORT_CSV) &:
 	dotnet run -c Release --project $(REPO_ROOT)/Convolution.Measurement
 
 .PHONY: benchmark
-benchmark: $(BENCHMARK_REPORT_CSV) $(PIPELINES_BENCHMARK_REPORT_CSV) $(UNSAFE_BENCHMARK_REPORT_CSV)
+benchmark:
+	dotnet run -c Release --project $(REPO_ROOT)/Convolution.Measurement
 
 # plots
 
+BENCHMARK_REPORT_PNG ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Benchmark-report.png
+PIPELINES_BENCHMARK_REPORT_PNG ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Pipelines-report.png
+UNSAFE_BENCHMARK_REPORT_PNG ?= $(REPO_ROOT)/Artifacts/Benchmark/Convolution.Measurement.Unsafe-report.png
+
 $(BENCHMARK_REPORT_PNG): venv $(BENCHMARK_REPORT_CSV)
-	$(REPO_ROOT)/venv/bin/python $(REPO_ROOT)/scripts/benchmark-plot.py
+	REPORT_PATH_CSV=$(BENCHMARK_REPORT_CSV) \
+	REPORT_PATH_PNG=$(BENCHMARK_REPORT_PNG) \
+	$(REPO_ROOT)/venv/bin/python $(REPO_ROOT)/scripts/make-plot.py
 
 $(PIPELINES_BENCHMARK_REPORT_PNG): venv $(PIPELINES_BENCHMARK_REPORT_CSV)
-	$(REPO_ROOT)/venv/bin/python $(REPO_ROOT)/scripts/pipelines-plot.py
+	REPORT_PATH_CSV=$(PIPELINES_BENCHMARK_REPORT_CSV) \
+	REPORT_PATH_PNG=$(PIPELINES_BENCHMARK_REPORT_PNG) \
+	$(REPO_ROOT)/venv/bin/python $(REPO_ROOT)/scripts/make-plot.py
 
 $(UNSAFE_BENCHMARK_REPORT_PNG): venv $(UNSAFE_BENCHMARK_REPORT_CSV)
-	$(REPO_ROOT)/venv/bin/python $(REPO_ROOT)/scripts/unsafe-plot.py
+	REPORT_PATH_CSV=$(UNSAFE_BENCHMARK_REPORT_CSV) \
+	REPORT_PATH_PNG=$(UNSAFE_BENCHMARK_REPORT_PNG) \
+	$(REPO_ROOT)/venv/bin/python $(REPO_ROOT)/scripts/make-plot.py
 
 plots: $(BENCHMARK_REPORT_PNG) $(PIPELINES_BENCHMARK_REPORT_PNG) $(UNSAFE_BENCHMARK_REPORT_PNG)
 
@@ -69,6 +58,8 @@ plots: $(BENCHMARK_REPORT_PNG) $(PIPELINES_BENCHMARK_REPORT_PNG) $(UNSAFE_BENCHM
 .PHONY: test
 test:
 	dotnet test $(REPO_ROOT)/Convolution.Tests/Convolution.Tests.csproj --filter "Suite=All"
+
+COVERAGE_SUMMARY_TXT ?= $(REPO_ROOT)/Artifacts/Coverage/coverage-summary.txt
 
 $(COVERAGE_SUMMARY_TXT): restore
 	dotnet test $(REPO_ROOT)/Convolution.Tests/Convolution.Tests.csproj \
