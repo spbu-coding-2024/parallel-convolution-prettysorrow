@@ -14,5 +14,7 @@ public class BenchmarkConfig : ManualConfig
             .WithTimeUnit(TimeUnit.Millisecond)
             .WithSizeUnit(SizeUnit.B)
             .WithCultureInfo(CultureInfo.InvariantCulture);
+
+        this.AddColumn(BenchmarkDotNet.Columns.BaselineColumn.Default);
     }
 }

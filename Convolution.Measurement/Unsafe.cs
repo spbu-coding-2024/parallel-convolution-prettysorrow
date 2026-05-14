@@ -13,13 +13,13 @@ public class Unsafe
 {
     private static readonly Func<string, string> MakeOutputPath = path => Path.ChangeExtension(path, ".conv.png");
 
-    [Params(3, 15)]
+    [Params(3, 5)]
     public int ImageCount { get; set; }
 
-    [Params(32, 512)]
+    [Params(16, 32)]
     public int ImageSize { get; set; }
 
-    [Params(3, 13)]
+    [Params(3, 5)]
     public int FilterSize { get; set; }
 
     private readonly ImageGenerator imageGenerator = new(seed: 42);

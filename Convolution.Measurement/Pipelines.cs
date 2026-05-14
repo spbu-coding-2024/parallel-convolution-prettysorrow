@@ -11,13 +11,13 @@ public class Pipelines
 {
     private static readonly Func<string, string> MakeOutputPath = path => Path.ChangeExtension(path, ".conv.png");
 
-    [Params(3, 10)]
+    [Params(3, 5)]
     public int ImageCount { get; set; }
 
-    [Params(32, 128)]
+    [Params(16, 32)]
     public int ImageSize { get; set; }
 
-    [Params(5, 13)]
+    [Params(3, 5)]
     public int FilterSize { get; set; }
 
     private readonly ImageGenerator imageGenerator = new(seed: 42);
