@@ -17,10 +17,10 @@ public class Benchmark
     [Params(1)]
     public int ImageCount { get; set; }
 
-    [Params(32, 128, 512)]
+    [Params(16, 32)]
     public int ImageSize { get; set; }
 
-    [Params(3, 11, 21)]
+    [Params(3, 5)]
     public int FilterSize { get; set; }
 
     private readonly ImageGenerator imageGenerator = new(seed: 42);
