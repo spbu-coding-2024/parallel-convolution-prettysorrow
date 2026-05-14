@@ -79,6 +79,7 @@ jobs:
           cp coverage-artifact/coverage-summary.txt                                      public/Coverage/coverage-summary.txt
           cp benchmark-artifact/Convolution.Measurement.Benchmark-report.png             public/Benchmark/Convolution.Measurement.Benchmark-report.png
           cp benchmark-artifact/Convolution.Measurement.Pipelines-report.png             public/Benchmark/Convolution.Measurement.Pipelines-report.png
+          cp benchmark-artifact/Convolution.Measurement.Unsafe-report.png                public/Benchmark/Convolution.Measurement.Unsafe-report.png
 
       - uses: peaceiris/actions-gh-pages@v3
         with:
