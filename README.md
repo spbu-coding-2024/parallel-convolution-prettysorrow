@@ -48,12 +48,13 @@ You can also deploy it locally with benchmark results obtained on your machine:
 > Hereinafter "unsafe" refers to a memory-access optimized parallel row-by-row image convolution implementation presented in `Convolution.Impl.Unsafe`
 
 
-- Naive parallel implementation is up to x5 faster than sequential one in most cases
+- Naive parallel implementation is up to 5× faster than the sequential one
+    - In most cases it is about a 2×-3× advantage
 - The difference between pixel access orders in the naive parallel implementation is insignificant in most cases
-    - This is likely because the access was performed through the indexers of the `SixLabors.ImageSharp.Image` class, which negate the advantages of a row-by-row approach
+    - This is likely because the access was performed through the indexers of the `SixLabors.ImageSharp.Image` class, which negates the advantages of a row-by-row approach
 - Unsafe implementation is much faster than other ones
-    - Up to x10 advantage over the sequential approach
-    - Up to x2.5 advantage over the naive parallel approaches
+    - Up to 10× advantage over the sequential approach
+    - Up to 2.5× advantage over the naive parallel approaches
 - .NET's way of resource distribution is better than presented manual pipeline options tunings in most cases
     - In most cases, certain tunings allow achieving performance as close as possible to that provided by the .NET runtime
 
@@ -61,15 +62,14 @@ You can also deploy it locally with benchmark results obtained on your machine:
 
 <img src="Artifacts/Benchmark/Convolution.Measurement.Benchmark-report.png" width="1000" alt="benchmark-report">
 
-
 #### Different pipelines:
 
 <img src="Artifacts/Benchmark/Convolution.Measurement.Pipelines-report.png" width="1000" alt="pipelines-report">
 
-#### Different pipeline tunings (for unsafe implementation):
+#### Different pipeline tunings (for the unsafe implementation):
 
 <img src="Artifacts/Benchmark/Convolution.Measurement.Unsafe-report.png" width="1000" alt="unsafe-report">
 
 - `MinEverything` stands for pipeline with 3 workers (1 reader, 1 convolver, 1 writer) without image-level parallelism
 - `MaxEverything` stands for pipeline where parallelism is not limited at any level (so resource management is entirely handled by .NET runtime)
-- `Unsafe_[2N]Helpers_[M]ForImage` stand for a pipeline with up to `N` readers, `N` writers and up to `M` workers for a single image
+- `Unsafe_[2N]Helpers_[M]ForImage` stand for a pipeline with up to `N` readers in total, up to `N` writers in total and up to `M` workers for a single image
