@@ -13,7 +13,7 @@ public class EdgeCases
     [Fact]
     public void FilterConstructor_NonSquareKernel_ThrowsArgumentException()
     {
-        var kernel3x4 = new float[3, 4];
+        var kernel3x4 = new float[3, 5];
         Assert.Throws<ArgumentException>(() => new Filter(kernel3x4));
     }
 
@@ -27,17 +27,13 @@ public class EdgeCases
     [Fact]
     public void FilterConstructor_SquareOddSizedKernel_DoesNotThrow()
     {
-        var valid1x1 = new float[1, 1];
-        var valid3x3 = new float[3, 3];
-        var valid5x5 = new float[5, 5];
+        var kernel1x1 = new float[1, 1];
+        var kernel3x3 = new float[3, 3];
+        var kernel5x5 = new float[5, 5];
 
-        var filter1 = new Filter(valid1x1);
-        var filter2 = new Filter(valid3x3);
-        var filter3 = new Filter(valid5x5);
-
-        Assert.NotNull(filter1);
-        Assert.NotNull(filter2);
-        Assert.NotNull(filter3);
+        Assert.NotNull(new Filter(kernel1x1));
+        Assert.NotNull(new Filter(kernel3x3));
+        Assert.NotNull(new Filter(kernel5x5));
     }
 
     [Fact]
@@ -62,11 +58,8 @@ public class EdgeCases
         var wrapFilter3x3 = new Filter(kernel3x3, edgeMode: EdgeMode.Wrap);
         var wrapFilter5x5 = new Filter(kernel5x5, edgeMode: EdgeMode.Wrap);
 
-        var composedClamp = clampFilter5x5.Compose(clampFilter3x3);
-        var composedWrap = wrapFilter3x3.Compose(wrapFilter5x5);
-
-        Assert.NotNull(composedClamp);
-        Assert.NotNull(composedWrap);
+        Assert.NotNull(clampFilter3x3.Compose(clampFilter5x5));
+        Assert.NotNull(wrapFilter5x5.Compose(wrapFilter3x3));
     }
 
     [Fact]
@@ -81,13 +74,10 @@ public class EdgeCases
     public void Pad_PozitivePadding_DoesNotThrows()
     {
         var filter = Filters.Identity;
-        var paddedFilter1 = filter.Pad(padding: 1);
-        var paddedFilter5 = filter.Pad(padding: 5);
-        var paddedFilter50 = filter.Pad(padding: 50);
 
-        Assert.NotNull(paddedFilter1);
-        Assert.NotNull(paddedFilter5);
-        Assert.NotNull(paddedFilter50);
+        Assert.NotNull(filter.Pad(padding: 1));
+        Assert.NotNull(filter.Pad(padding: 5));
+        Assert.NotNull(filter.Pad(padding: 50));
     }
 
     [Fact]
@@ -103,11 +93,64 @@ public class EdgeCases
     [Fact]
     public void FilterGenerator_NegativeKernelSize_ThrowsArgumentOutOfRangeException()
     {
-        var generator = new FilterGenerator(null);
+        var generator = new FilterGenerator();
 
         Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(-1));
         Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(-2));
         Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(-15));
+    }
+
+    [Fact]
+    public void FilterGenerator_PositiveOddKernelSize_DoesNotThrow()
+    {
+        var generator = new FilterGenerator();
+
+        Assert.NotNull(() => generator.Next(1));
+        Assert.NotNull(() => generator.Next(5));
+        Assert.NotNull(() => generator.Next(111));
+    }
+
+    [Fact]
+    public void ImageGenerator_NegativeOrZeroImageSize_ThrowsArgumentOutOfRangeException()
+    {
+        var generator = new ImageGenerator();
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(width: -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(width: 0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(width: -1920));
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(height: -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(height: 0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(height: -1080));
+    }
+
+    [Fact]
+    public void ImageGenerator_PositiveImageSize_DoesNotThrow()
+    {
+        var generator = new ImageGenerator();
+
+        Assert.NotNull(generator.Next());
+        Assert.NotNull(generator.Next(width: 100));
+        Assert.NotNull(generator.Next(height: 100));
+        Assert.NotNull(generator.Next(width: 100, height: 100));
+    }
+
+    [Fact]
+    public void ImageGenerator_NegativeShapeCount_ThrowsArgumentOutOfRangeException()
+    {
+        var generator = new ImageGenerator();
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(shapeCount: -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => generator.Next(shapeCount: -42));
+    }
+
+    [Fact]
+    public void ImageGenerator_PositiveOrZeroShapeCount_DoesNotThrow()
+    {
+        var generator = new ImageGenerator();
+
+        Assert.NotNull(generator.Next(shapeCount: 0));
+        Assert.NotNull(generator.Next(shapeCount: 42));
     }
 
     [Fact]
@@ -132,7 +175,28 @@ public class EdgeCases
     public void AsyncPipelineOptions_PositiveCounters_DoesNotThrow()
     {
         Func<Image<RgbaVector>, Image<RgbaVector>> stub = image => image;
-        var options = new Convolution.Impl.AsyncPipelineOptions(stub, (1, 20, 300), (4000, 50000, 600000));
-        Assert.NotNull(options);
+        Assert.NotNull(new Convolution.Impl.AsyncPipelineOptions(stub, (1, 20, 300), (4000, 50000, 600000)));
+    }
+
+    [Fact]
+    public void Parallel_ApplyTiles_NegativeOrZeroTileSize_ThrowsArgumentOutOfRangeException()
+    {
+        var filter = FilterGenerator.Shared.Next();
+        var image = ImageGenerator.Shared.Next();
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => Convolution.Impl.Parallel.ApplyTiles(filter, image, tileSize: -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Convolution.Impl.Parallel.ApplyTiles(filter, image, tileSize: -5));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Convolution.Impl.Parallel.ApplyTiles(filter, image, tileSize: 0));
+    }
+
+    [Fact]
+    public void Parallel_ApplyTiles_PositiveTileSize_DoesNotThrow()
+    {
+        var filter = FilterGenerator.Shared.Next();
+        var image = ImageGenerator.Shared.Next();
+
+        Assert.NotNull(Convolution.Impl.Parallel.ApplyTiles(filter, image, tileSize: 1));
+        Assert.NotNull(Convolution.Impl.Parallel.ApplyTiles(filter, image, tileSize: 16));
+        Assert.NotNull(Convolution.Impl.Parallel.ApplyTiles(filter, image, tileSize: 144));
     }
 }
