@@ -7,6 +7,8 @@ public class FilterGenerator(int? seed = null)
 {
     private readonly Random random = seed.HasValue ? new Random(seed.Value) : new Random();
 
+    public static readonly FilterGenerator Shared = new(seed: 42);
+
     public Filter Next(
         int size = 5,
         float factor = 1.0f,

@@ -13,6 +13,8 @@ public class ImageGenerator(int? seed = null)
 {
     private readonly Random random = seed.HasValue ? new Random(seed.Value) : new Random();
 
+    public static readonly ImageGenerator Shared = new(seed: 42);
+
     public Image<RgbaVector> Next(int width = 200, int height = 150, int shapeCount = 10)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width, nameof(width));
