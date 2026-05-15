@@ -5,6 +5,9 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
 
+/// <summary>
+/// Asserts that exceptions are thrown when they should be.
+/// </summary>
 public class EdgeCases
 {
     [Fact]

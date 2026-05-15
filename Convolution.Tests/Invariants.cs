@@ -3,6 +3,9 @@ namespace Convolution.Tests;
 using Convolution.Core;
 using Xunit;
 
+/// <summary>
+/// Checks compliance with simple invariants for several image convolution implementations.
+/// </summary>
 [Trait("Suite", "Abstract")]
 public abstract class InvariantTests
 {

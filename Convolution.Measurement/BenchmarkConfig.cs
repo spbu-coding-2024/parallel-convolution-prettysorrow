@@ -15,6 +15,6 @@ public class BenchmarkConfig : ManualConfig
             .WithSizeUnit(SizeUnit.B)
             .WithCultureInfo(CultureInfo.InvariantCulture);
 
-        this.AddColumn(BenchmarkDotNet.Columns.BaselineColumn.Default);
+        this.AddColumn(BenchmarkDotNet.Columns.BaselineColumn.Default); // is required for plots.
     }
 }

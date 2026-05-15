@@ -6,7 +6,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
 
 /// <summary>
-/// Checks that different pixel traversal orders in parallel convolution implementations produce identical results.
+/// Compares Convolution.Impl.Unsafe and Convolution.Impl.Parallel.
 /// </summary>
 [Trait("Suite", "Abstract")]
 public abstract class CompareUnsafeParallel

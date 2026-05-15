@@ -5,6 +5,9 @@ using Convolution.Core;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
+/// <summary>
+/// Runs on random images and random filter and compares several tunings for convolution async pipeline which uses Convolution.Impl.Unsafe.
+/// </summary>
 [MarkdownExporter]
 [CsvExporter]
 [SimpleJob(warmupCount: 3, iterationCount: 5)]

@@ -6,7 +6,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 /// <summary>
-/// Benchmark which runs on random generated image and random generated filter and compares different convolution implementations: sequential, parallel, unsafe.
+/// Runs on random image and random filter and compares different convolution implementations.
 /// </summary>
 [MarkdownExporter]
 [CsvExporter]

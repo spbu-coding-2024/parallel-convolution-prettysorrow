@@ -3,6 +3,9 @@ namespace Convolution.Measurement;
 using BenchmarkDotNet.Attributes;
 using Convolution.Core;
 
+/// <summary>
+/// Runs on random images and random filter and compares different convolution pipeline implementations.
+/// </summary>
 [MarkdownExporter]
 [CsvExporter]
 [SimpleJob(warmupCount: 3, iterationCount: 5)]

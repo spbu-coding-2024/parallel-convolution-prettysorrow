@@ -39,6 +39,9 @@ public sealed class AsyncPipelineOptions
     }
 }
 
+/// <summary>
+/// Provides several convolution pipelines for stream of images.
+/// </summary>
 public static class Pipeline
 {
     public static void ProcessSync(IEnumerable<string> inputPaths, Func<string, string> makeOutputPath, Func<Image<RgbaVector>, Image<RgbaVector>> convolve)
