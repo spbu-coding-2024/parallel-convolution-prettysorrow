@@ -87,8 +87,15 @@
     </header>
 
     <section>
-        <h2>Benchmark</h2>
-        <img src="Convolution.Measurement.Benchmark-report.png" alt="Benchmark chart">
+        <h2>Benchmarks</h2>
+        <h3>Compare different implementations on one image</h3>
+        <img src="Benchmark/Convolution.Measurement.Benchmark-report.png" alt="Benchmark chart">
+        <div style="margin-top: 20px;"></div>
+        <h3>Compare different pipelines</h3>
+        <img src="Benchmark/Convolution.Measurement.Pipelines-report.png" alt="Pipeline chart">
+        <div style="margin-top: 20px;"></div>
+        <h3>Compare different pipeline tunings</h3>
+        <img src="Benchmark/Convolution.Measurement.Unsafe-report.png" alt="Pipeline chart">
     </section>
 
     <section>
@@ -100,7 +107,7 @@
         document.getElementById('timestamp').textContent =
             'Generated ' + new Date(document.lastModified).toUTCString();
 
-        fetch('coverage-summary.txt')
+        fetch('Coverage/coverage-summary.txt')
             .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
             .then(t => { document.getElementById('coverage').textContent = t; })
             .catch(e => {

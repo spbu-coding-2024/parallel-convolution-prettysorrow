@@ -6,15 +6,18 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 /// <summary>
-/// Benchmark which runs on random generated images and compares different convolution implementations.
+/// Runs on random image and random filter and compares different convolution implementations.
 /// </summary>
 [MarkdownExporter]
 [CsvExporter]
-[SimpleJob(warmupCount: 3, iterationCount: 10)]
+[SimpleJob(warmupCount: 3, iterationCount: 5)]
 [Config(typeof(BenchmarkConfig))]
 public class Benchmark
 {
-    [Params(128, 256, 512)]
+    [Params(1)]
+    public int ImageCount { get; set; }
+
+    [Params(16, 32)]
     public int ImageSize { get; set; }
 
     [Params(5, 13, 21)]
@@ -38,25 +41,29 @@ public class Benchmark
 
     [Benchmark(Baseline = true)]
     public Image<RgbaVector> Sequential()
-        => Impl.Sequential.Apply(this.filter, this.sourceImage);
+        => Convolution.Impl.Sequential.Apply(this.filter, this.sourceImage);
 
     [Benchmark]
     public Image<RgbaVector> Parallel_Rows()
-        => Impl.Parallel.ApplyRows(this.filter, this.sourceImage);
+        => Convolution.Impl.Parallel.ApplyRows(this.filter, this.sourceImage);
 
     [Benchmark]
     public Image<RgbaVector> Parallel_Columns()
-        => Impl.Parallel.ApplyColumns(this.filter, this.sourceImage);
+        => Convolution.Impl.Parallel.ApplyColumns(this.filter, this.sourceImage);
 
     [Benchmark]
     public Image<RgbaVector> Parallel_Tiles_Size8()
-        => Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 8);
+        => Convolution.Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 8);
 
     [Benchmark]
     public Image<RgbaVector> Parallel_Tiles_Size32()
-   => Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 32);
+        => Convolution.Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 32);
 
     [Benchmark]
     public Image<RgbaVector> Parallel_Tiles_Size128()
-   => Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 128);
+        => Convolution.Impl.Parallel.ApplyTiles(this.filter, this.sourceImage, tileSize: 128);
+
+    [Benchmark]
+    public Image<RgbaVector> Unsafe()
+        => Convolution.Impl.Unsafe.Apply(this.filter, this.sourceImage);
 }

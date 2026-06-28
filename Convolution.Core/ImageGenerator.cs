@@ -13,6 +13,8 @@ public class ImageGenerator(int? seed = null)
 {
     private readonly Random random = seed.HasValue ? new Random(seed.Value) : new Random();
 
+    public static readonly ImageGenerator Shared = new(seed: 42);
+
     public Image<RgbaVector> Next(int width = 200, int height = 150, int shapeCount = 10)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width, nameof(width));
@@ -65,5 +67,29 @@ public class ImageGenerator(int? seed = null)
                     break;
             }
         });
+    }
+
+    public List<string> WriteRandomImages(string destDir, int count = 10, int width = 200, int height = 100)
+    {
+        if (!Directory.Exists(destDir))
+        {
+            throw new DirectoryNotFoundException(nameof(destDir));
+        }
+
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count, nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width, nameof(width));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height, nameof(height));
+
+        List<string> result = new(count);
+
+        for (int i = 0; i < count; ++i)
+        {
+            using var image = this.Next(width, height);
+            string imagePath = System.IO.Path.Combine(destDir, $"{Guid.NewGuid()}.png");
+            image.Save(imagePath);
+            result.Add(imagePath);
+        }
+
+        return result;
     }
 }

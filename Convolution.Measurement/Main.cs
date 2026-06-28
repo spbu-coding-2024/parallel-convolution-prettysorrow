@@ -2,13 +2,14 @@
 
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
-using Convolution.Measurement;
 
 var config = DefaultConfig.Instance
                 .WithArtifactsPath("Artifacts") // writes results to <repo root>/Artifacts/
                 .WithOption(ConfigOptions.DisableLogFile, true); // no .log file
 
-BenchmarkRunner.Run<Benchmark>(config);
+BenchmarkRunner.Run<Convolution.Measurement.Benchmark>(config);
+BenchmarkRunner.Run<Convolution.Measurement.Pipelines>(config);
+BenchmarkRunner.Run<Convolution.Measurement.Unsafe>(config);
 
 try
 {
@@ -21,8 +22,17 @@ catch (DirectoryNotFoundException)
 try
 {
     Directory.Move("Artifacts/results", "Artifacts/Benchmark");
-    File.Delete("Artifacts/Benchmark/Convolution.Measurement.Benchmark-report-default.md");
-    File.Move("Artifacts/Benchmark/Convolution.Measurement.Benchmark-report-github.md", "Artifacts/Benchmark/Convolution.Measurement.Benchmark-report.md");
+
+    foreach (var path in Directory.GetFiles("Artifacts/Benchmark", "*-report-default.md"))
+    {
+        File.Delete(path);
+    }
+
+    foreach (var path in Directory.GetFiles("Artifacts/Benchmark", "*-report-github.md"))
+    {
+        string dest = path.Replace("report-github.md", "-report.md");
+        File.Move(path, dest);
+    }
 }
 catch (Exception ex)
 {
