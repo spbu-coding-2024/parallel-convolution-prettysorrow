@@ -33,3 +33,54 @@ jobs:
           path: |
             Artifacts/Coverage/coverage-report.xml
             Artifacts/Coverage/coverage-summary.txt
+
+  benchmark:
+    name: Run benchmarks and make plot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14.x'
+      - run: make restore
+      - run: make benchmark
+      - run: make plot
+      - uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: Artifacts/Benchmark/
+
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: [coverage, benchmark]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-artifact
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmark-artifact
+
+      - name: Prepare deploy
+        run: |
+          mkdir public
+          cp Artifacts/index.html                                                        public/
+          cp coverage-artifact/coverage-summary.txt                                      public/
+          cp benchmark-artifact/Convolution.Measurement.Benchmark-report.png       public/
+
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          keep_files: false
