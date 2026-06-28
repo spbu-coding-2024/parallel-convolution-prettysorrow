@@ -10,6 +10,7 @@ public class BenchmarkConfig : ManualConfig
 {
     public BenchmarkConfig()
     {
+        this.Options = ConfigOptions.StopOnFirstError;
         this.SummaryStyle = SummaryStyle.Default
             .WithTimeUnit(TimeUnit.Millisecond)
             .WithSizeUnit(SizeUnit.B)

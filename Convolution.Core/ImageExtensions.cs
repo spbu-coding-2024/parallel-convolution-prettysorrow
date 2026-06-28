@@ -57,7 +57,8 @@ public static class ImageExtensions
 
         int size = filter.KernelSize;
         int offset = size / 2;
-        float r = 0, g = 0, b = 0;
+
+        float r = 0, g = 0, b = 0, a = 0;
 
         for (int ky = 0; ky < size; ky++)
         {
@@ -80,16 +81,19 @@ public static class ImageExtensions
 
                 var pixel = image[srcX, srcY];
                 float weight = filter.Kernel[ky, kx];
+
                 r += pixel.R * weight;
                 g += pixel.G * weight;
                 b += pixel.B * weight;
+                a += pixel.A * weight;
             }
         }
 
         r = (r * filter.Factor) + filter.Bias;
         g = (g * filter.Factor) + filter.Bias;
         b = (b * filter.Factor) + filter.Bias;
+        a = (a * filter.Factor) + filter.Bias;
 
-        return new RgbaVector(r, g, b);
+        return new RgbaVector(r, g, b, a);
     }
 }
