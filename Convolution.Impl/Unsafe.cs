@@ -73,7 +73,7 @@ public static unsafe class Unsafe
 
             for (var x = 0; x < width; x++)
             {
-                float r = 0f, g = 0f, b = 0f;
+                float r = 0f, g = 0f, b = 0f, a = 0f;
 
                 for (var ky = 0; ky < kernelSize; ky++)
                 {
@@ -91,14 +91,16 @@ public static unsafe class Unsafe
                         r += px.R * weight;
                         g += px.G * weight;
                         b += px.B * weight;
+                        a += px.A * weight;
                     }
                 }
 
                 r = (r * factor) + bias;
                 g = (g * factor) + bias;
                 b = (b * factor) + bias;
+                a = (a * factor) + bias;
 
-                pDstRow[x] = new(r, g, b);
+                pDstRow[x] = new(r, g, b, a);
             }
         });
     }
