@@ -50,7 +50,6 @@ for i, cnt in enumerate(image_counts):
         axes[i, j].set_title(f"ImageCount = {cnt}, ImageSize = {sz}")
         axes[i, j].set_ylabel("Relative speed")
 
-# === Одна легенда с отступом снизу ===
 for ax in axes.flat:
     handles, labels = ax.get_legend_handles_labels()
     if handles:
@@ -61,7 +60,7 @@ for ax in axes.flat:
             handles, labels,
             title="Method",
             loc="lower center",
-            bbox_to_anchor=(0.5, -0.08),  # <-- сдвинули легенду ещё ниже
+            bbox_to_anchor=(0.5, -0.08),
             ncol=estimated_cols,
             frameon=True,
             handlelength=1.5,
@@ -79,7 +78,6 @@ for ax in axes.flat:
                 leg.remove()
         break
 
-# <-- Добавили отступ снизу у всего рисунка, чтобы легенда не наезжала
-plt.tight_layout(rect=[0, 0.12, 1, 1])  # [left, bottom, right, top] в нормированных координатах
+plt.tight_layout(rect=[0, 0.12, 1, 1])
 plt.savefig(output_path, dpi=300, bbox_inches="tight")
 plt.close()
